@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Кировская область — Народная карта</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', -apple-system, Roboto, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0b2b26 0%, #1a4a3a 50%, #0d352f 100%);
+            padding: 16px;
+            position: relative;
+            overflow-x: hidden;
+        }
+        .floating-bubble {
+            position: fixed;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, rgba(255,180,80,0.12), rgba(255,140,0,0.04));
+            pointer-events: none;
+            z-index: 0;
+            animation: float 18s infinite ease-in-out;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) translateX(0px); }
+            33% { transform: translateY(-25px) translateX(12px); }
+            66% { transform: translateY(18px) translateX(-8px); }
+        }
+        .app {
+            max-width: 550px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.97);
+            border-radius: 40px;
+            backdrop-filter: blur(2px);
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.35);
+            position: relative;
+            z-index: 2;
+            animation: slideUp 0.5s ease-out;
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .header {
+            background: linear-gradient(135deg, #ff8c00 0%, #ff6a00 100%);
+            padding: 28px 20px;
+            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        .header::before {
+            content: '🏔️';
+            position: absolute;
+            font-size: 100px;
+            opacity: 0.12;
+            right: -20px;
+            bottom: -20px;
+            transform: rotate(-15deg);
+        }
+        .header::after {
+            content: '🌾';
+            position: absolute;
+            font-size: 80px;
+            opacity: 0.12;
+            left: -20px;
+            top: -10px;
+            transform: rotate(10deg);
+        }
+        .header h1 {
+            font-size: 26px;
+            letter-spacing: 1px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .header p {
+            font-size: 13px;
+            opacity: 0.9;
+            margin-top: 8px;
+        }
+        .stats {
+            padding: 20px;
+            background: linear-gradient(120deg, #1e4d3a 0%, #14382a 100%);
+        }
+        .stats-grid {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .stat-card {
+            flex: 1;
+            background: rgba(255,255,255,0.12);
+            backdrop-filter: blur(8px);
+            border-radius: 24px;
+            padding: 16px 12px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: transform 0.2s;
+        }
+        .stat-card:hover {
+            transform: translateY(-3px);
+            background: rgba(255,255,255,0.2);
+        }
+        .stat-number {
+            font-size: 32px;
+            font-weight: 800;
+            color: #ffb347;
+        }
+        .stat-label {
+            font-size: 11px;
+            opacity: 0.8;
+            margin-top: 6px;
+            color: white;
+        }
+        .search-section {
+            padding: 20px 20px 10px 20px;
+            background: white;
+        }
+        .search-box {
+            display: flex;
+            gap: 8px;
+            background: #f3f4f6;
+            border-radius: 50px;
+            padding: 4px 8px 4px 18px;
+            align-items: center;
+            transition: all 0.2s;
+        }
+        .search-box:focus-within {
+            box-shadow: 0 4px 12px rgba(255,140,0,0.2);
+            background: white;
+        }
+        .search-box input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            padding: 14px 0;
+            font-size: 16px;
+            outline: none;
+        }
+        .search-box button {
+            background: #ff8c00;
+            border: none;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .search-box button:active {
+            transform: scale(0.95);
+        }
+        .regions-container {
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 0 20px 20px 20px;
+            background: white;
+        }
+        .region-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 0;
+            border-bottom: 1px solid #edf2f7;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .region-item:hover {
+            background: #fff7ed;
+            padding-left: 12px;
+            padding-right: 12px;
+            margin: 0 -12px;
+            border-radius: 20px;
+        }
+        .region-name {
+            font-weight: 500;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .region-percent {
+            background: linear-gradient(135deg, #2c5a4a, #1e3d32);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 40px;
+            font-size: 14px;
+            font-weight: 700;
+            min-width: 70px;
+            text-align: center;
+        }
+        .vote-section {
+            padding: 16px 20px 24px;
+            background: white;
+            border-top: 1px solid #eef2f6;
+            text-align: center;
+        }
+        .vote-btn {
+            background: linear-gradient(135deg, #ff8c00, #ff6a00);
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 60px;
+            font-size: 18px;
+            font-weight: 700;
+            width: 100%;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 8px 20px rgba(255,140,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .vote-btn:active {
+            transform: scale(0.97);
+        }
+        .selected-info {
+            margin-top: 14px;
+            font-size: 13px;
+            color: #2c5a4a;
+            font-weight: 500;
+            background: #f0fdf4;
+            padding: 8px;
+            border-radius: 30px;
+        }
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #888;
+        }
+        .regions-container::-webkit-scrollbar {
+            width: 4px;
+        }
+        .regions-container::-webkit-scrollbar-track {
+            background: #e2e8f0;
+            border-radius: 10px;
+        }
+        .regions-container::-webkit-scrollbar-thumb {
+            background: #ff8c00;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app">
+    <div class="header">
+        <h1><span>🗺️</span> Земля Вятская <span>🌾</span></h1>
+        <p>Выбери свой город или район — покажи силу малой родины!</p>
+    </div>
+
+    <div class="stats">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" id="totalCount">0</div>
+                <div class="stat-label">Вятчан в игре</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="topRegionName">—</div>
+                <div class="stat-label">Лидер по голосам</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="topRegionPercent">0%</div>
+                <div class="stat-label">Доля лидера</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="search-section">
+        <div class="search-box">
+            <span>🔍</span>
+            <input type="text" id="searchInput" placeholder="Найти свой город или район..." autocomplete="off">
+            <button id="searchClearBtn">✕</button>
+        </div>
+    </div>
+
+    <div class="regions-container" id="regionsList">
+        <div class="loading">Загрузка карты Вятки...</div>
+    </div>
+
+    <div class="vote-section">
+        <button class="vote-btn" id="voteBtn">
+            <span>🏆</span> Проголосовать <span>✅</span>
+        </button>
+        <div class="selected-info" id="selectedInfo">Нажми на любой город в списке</div>
+    </div>
+</div>
+
+<script>
+    // ==============================================================
+    // ⚠️ ВСТАВЬ СЮДА ТВОЮ ССЫЛКУ НА APPS SCRIPT ⚠️
+    // ==============================================================
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxKvg4TjbclmD9-VE8qv-bt6DljkijxWRsdEdSwGxO4M-482XzrMHnIhwluUmZV49YHUQ/exec";
+    
+    // ==============================================================
+    //  СПИСОК ВСЕХ ГОРОДОВ И РАЙОНОВ КИРОВСКОЙ ОБЛАСТИ
+    // ==============================================================
+    const REGIONS = [
+        "Киров", "Кирово-Чепецк", "Слободской", "Вятские Поляны", "Котельнич",
+        "Яранск", "Омутнинск", "Советск", "Уржум", "Нолинск", "Малмыж",
+        "Белая Холуница", "Луза", "Кирс", "Мураши", "Зуевка", "Орлов",
+        "Кикнур", "Тужа", "Санчурск", "Богородское", "Суна", "Верхошижемье",
+        "Кумены", "Фалёнки", "Афанасьево", "Нагорск", "Подосиновец", "Даровской",
+        "Шабалино", "Нема", "Опарино", "Юрья", "Кстинино", "Пижанка",
+        "Лебяжье", "Свеча", "Стрижи", "Лянгасово", "Дороничи"
+    ];
+
+    let votesData = {};
+    let selectedRegion = null;
+    let currentSearchQuery = "";
+
+    async function loadVotesFromSheet() {
+        try {
+            const response = await fetch(SCRIPT_URL);
+            const data = await response.json();
+            
+            for (let region of REGIONS) {
+                votesData[region] = 0;
+            }
+            
+            if (!data.error) {
+                for (let [region, votes] of Object.entries(data)) {
+                    if (REGIONS.includes(region) && typeof votes === 'number') {
+                        votesData[region] = votes;
+                    }
+                }
+            }
+            return true;
+        } catch (error) {
+            console.error("Ошибка загрузки:", error);
+            return false;
+        }
+    }
+
+    async function sendVoteToSheet(region) {
+        await fetch(SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ region: region })
+        });
+        return true;
+    }
+
+    function getTotalVotes() {
+        return Object.values(votesData).reduce((sum, v) => sum + v, 0);
+    }
+
+    function getTopRegionInfo() {
+        let top = null;
+        let maxCount = -1;
+        for (let [name, count] of Object.entries(votesData)) {
+            if (count > maxCount) {
+                maxCount = count;
+                top = name;
+            }
+        }
+        const total = getTotalVotes();
+        const percent = total > 0 && top ? Math.round((maxCount / total) * 100) : 0;
+        return { name: top, count: maxCount, percent };
+    }
+
+    function animateValue(element, start, end, suffix = "") {
+        if (!element) return;
+        let current = start;
+        const step = Math.ceil((end - start) / 25);
+        const timer = setInterval(() => {
+            current += step;
+            if ((step > 0 && current >= end) || (step < 0 && current <= end)) {
+                current = end;
+                element.innerText = current + suffix;
+                clearInterval(timer);
+            } else {
+                element.innerText = current + suffix;
+            }
+        }, 15);
+    }
+
+    function renderRegionsList() {
+        const container = document.getElementById("regionsList");
+        const search = currentSearchQuery.toLowerCase();
+        let filtered = REGIONS;
+        if (search) {
+            filtered = REGIONS.filter(r => r.toLowerCase().includes(search));
+        }
+
+        if (filtered.length === 0) {
+            container.innerHTML = `<div class="loading">😔 Ничего не найдено в Вятской земле...</div>`;
+            return;
+        }
+
+        const total = getTotalVotes();
+        let html = "";
+        for (let region of filtered) {
+            const count = votesData[region] || 0;
+            const percent = total === 0 ? 0 : Math.round((count / total) * 100);
+            const isSelected = (selectedRegion === region);
+            
+            let badgeEmoji = "📍";
+            if (region === "Киров") badgeEmoji = "🏙️";
+            else if (region === "Кирово-Чепецк") badgeEmoji = "🏭";
+            else if (region.includes("ское") || region.includes("ский")) badgeEmoji = "🌾";
+            
+            html += `
+                <div class="region-item" data-region="${region}">
+                    <div class="region-name">
+                        <span class="region-badge">${badgeEmoji}</span>
+                        <span style="${isSelected ? 'color:#ff8c00; font-weight:700;' : ''}">${region} ${isSelected ? '✓' : ''}</span>
+                    </div>
+                    <div class="region-percent">${percent}%</div>
+                </div>
+            `;
+        }
+        container.innerHTML = html;
+
+        document.querySelectorAll('.region-item').forEach(el => {
+            el.addEventListener('click', () => {
+                const region = el.getAttribute('data-region');
+                selectedRegion = region;
+                document.getElementById("selectedInfo").innerHTML = `✅ Твой выбор: <strong>${selectedRegion}</strong>. Жми кнопку ниже!`;
+                renderRegionsList();
+            });
+        });
+    }
+
+    async function updateStatsUI() {
+        const total = getTotalVotes();
+        const totalEl = document.getElementById("totalCount");
+        const oldTotal = parseInt(totalEl.innerText) || 0;
+        animateValue(totalEl, oldTotal, total, "");
+
+        const topInfo = getTopRegionInfo();
+        const topNameEl = document.getElementById("topRegionName");
+        const topPercentEl = document.getElementById("topRegionPercent");
+        
+        if (topInfo.name) {
+            topNameEl.innerText = topInfo.name;
+            animateValue(topPercentEl, parseInt(topPercentEl.innerText) || 0, topInfo.percent, "%");
+        } else {
+            topNameEl.innerText = "—";
+            topPercentEl.innerText = "0%";
+        }
+    }
+
+    async function castVote() {
+        if (!selectedRegion) {
+            alert("🌾 Сначала выбери свой город или район из списка!");
+            return;
+        }
+        
+        const btn = document.getElementById("voteBtn");
+        btn.disabled = true;
+        btn.style.opacity = "0.7";
+        
+        try {
+            await sendVoteToSheet(selectedRegion);
+            votesData[selectedRegion]++;
+            renderRegionsList();
+            await updateStatsUI();
+            
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = "🎉 Голос засчитан! Спасибо 🎉";
+            btn.style.background = "linear-gradient(135deg, #2c7a2a, #1e5530)";
+            setTimeout(() => {
+                btn.innerHTML = originalHtml;
+                btn.style.background = "linear-gradient(135deg, #ff8c00, #ff6a00)";
+                btn.disabled = false;
+                btn.style.opacity = "1";
+            }, 1500);
+            
+            document.getElementById("selectedInfo").innerHTML = `✨ Твой голос за ${selectedRegion} учтён! Спасибо за участие ✨`;
+            selectedRegion = null;
+            renderRegionsList();
+            
+            setTimeout(() => {
+                if (!selectedRegion) {
+                    document.getElementById("selectedInfo").innerHTML = "Нажми на любой город в списке";
+                }
+            }, 2000);
+        } catch (error) {
+            alert("Ошибка при отправке голоса. Попробуй ещё раз.");
+            btn.disabled = false;
+            btn.style.opacity = "1";
+        }
+    }
+
+    async function init() {
+        document.getElementById("regionsList").innerHTML = '<div class="loading">📡 Загружаем реальные голоса кировчан...</div>';
+        await loadVotesFromSheet();
+        renderRegionsList();
+        updateStatsUI();
+        
+        document.getElementById("searchInput").addEventListener("input", (e) => {
+            currentSearchQuery = e.target.value;
+            renderRegionsList();
+        });
+        
+        document.getElementById("searchClearBtn").addEventListener("click", () => {
+            currentSearchQuery = "";
+            document.getElementById("searchInput").value = "";
+            renderRegionsList();
+        });
+        
+        document.getElementById("voteBtn").addEventListener("click", castVote);
+    }
+    
+    init();
+    
+    if (typeof window !== "undefined" && window.vkBridge) {
+        window.vkBridge.send("VKWebAppInit").catch(e => console.log(e));
+    }
+</script>
+
+<script>
+    for(let i = 0; i < 10; i++) {
+        let bubble = document.createElement('div');
+        bubble.classList.add('floating-bubble');
+        let size = Math.random() * 70 + 30;
+        bubble.style.width = size + 'px';
+        bubble.style.height = size + 'px';
+        bubble.style.left = Math.random() * 100 + '%';
+        bubble.style.bottom = Math.random() * 100 + '%';
+        bubble.style.animationDuration = (Math.random() * 15 + 10) + 's';
+        bubble.style.animationDelay = Math.random() * 5 + 's';
+        document.body.appendChild(bubble);
+    }
+</script>
+</body>
+</html>
