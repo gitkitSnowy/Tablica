@@ -9,22 +9,64 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            transition: background-color 0.3s ease, color 0.2s ease, border-color 0.2s ease;
+        }
+
+        /* Светлая тема (по умолчанию) */
+        :root {
+            --bg-gradient-start: #e0f2f1;
+            --bg-gradient-end: #b2dfdb;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --text-primary: #1a2a2a;
+            --text-secondary: #4a5a5a;
+            --header-bg: linear-gradient(135deg, #ff9100 0%, #ff5e00 100%);
+            --stat-bg: linear-gradient(120deg, #1a4a3a 0%, #0f3327 100%);
+            --stat-card-bg: rgba(0, 0, 0, 0.2);
+            --search-bg: #f3f4f6;
+            --region-border: #edf2f7;
+            --region-hover-bg: #fff5e6;
+            --percent-bg: linear-gradient(135deg, #2c5a4a, #1e3d32);
+            --vote-btn-bg: linear-gradient(135deg, #ff8c00, #ff5e00);
+            --selected-info-bg: #fef9e6;
+            --selected-info-color: #b45f06;
+            --toast-bg: #1e1e2f;
+            --particle-color: rgba(255, 140, 0, 0.15);
+        }
+
+        /* Тёмная тема */
+        body.dark {
+            --bg-gradient-start: #0a1f1c;
+            --bg-gradient-end: #051a15;
+            --card-bg: rgba(20, 30, 30, 0.97);
+            --text-primary: #e0e0e0;
+            --text-secondary: #a0b0b0;
+            --header-bg: linear-gradient(135deg, #b45f06 0%, #8b3c00 100%);
+            --stat-bg: linear-gradient(120deg, #0d2a22 0%, #071a14 100%);
+            --stat-card-bg: rgba(255, 255, 255, 0.08);
+            --search-bg: #2a3a3a;
+            --region-border: #2a3a3a;
+            --region-hover-bg: #2a3a2a;
+            --percent-bg: linear-gradient(135deg, #4a7a6a, #2a5a4a);
+            --vote-btn-bg: linear-gradient(135deg, #b45f06, #8b3c00);
+            --selected-info-bg: #2a3a2a;
+            --selected-info-color: #ffb347;
+            --toast-bg: #2a2a3f;
+            --particle-color: rgba(255, 140, 0, 0.08);
         }
 
         body {
             font-family: 'Segoe UI', -apple-system, 'Inter', system-ui, sans-serif;
             min-height: 100vh;
-            background: radial-gradient(ellipse at 20% 30%, #0a2f2a, #051a15);
+            background: radial-gradient(ellipse at 20% 30%, var(--bg-gradient-start), var(--bg-gradient-end));
             padding: 16px;
             position: relative;
             overflow-x: hidden;
         }
 
-        /* Анимированный фон с частицами */
         .particle {
             position: fixed;
             border-radius: 50%;
-            background: radial-gradient(circle, rgba(255,180,80,0.4), rgba(255,140,0,0));
+            background: radial-gradient(circle, var(--particle-color), transparent);
             pointer-events: none;
             z-index: 0;
             animation: floatParticle 12s infinite alternate ease-in-out;
@@ -38,19 +80,15 @@
         .app {
             max-width: 550px;
             margin: 0 auto;
-            background: rgba(255,255,255,0.98);
+            background: var(--card-bg);
             border-radius: 56px;
             backdrop-filter: blur(2px);
             overflow: hidden;
-            box-shadow: 0 30px 60px -20px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.2);
+            box-shadow: 0 30px 60px -20px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.1);
             position: relative;
             z-index: 2;
             animation: slideUp 0.6s cubic-bezier(0.2, 0.9, 0.4, 1.1);
-            transition: transform 0.3s ease;
-        }
-
-        .app:hover {
-            transform: scale(1.01);
+            color: var(--text-primary);
         }
 
         @keyframes slideUp {
@@ -59,8 +97,8 @@
         }
 
         .header {
-            background: linear-gradient(135deg, #ff9100 0%, #ff5e00 50%, #f04300 100%);
-            padding: 32px 24px;
+            background: var(--header-bg);
+            padding: 28px 24px;
             text-align: center;
             color: white;
             position: relative;
@@ -87,31 +125,54 @@
         .header h1 {
             font-size: 28px;
             font-weight: 800;
-            letter-spacing: -0.5px;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 12px;
             text-shadow: 0 2px 10px rgba(0,0,0,0.2);
-            animation: titleGlow 2s infinite alternate;
-        }
-
-        @keyframes titleGlow {
-            0% { text-shadow: 0 2px 10px rgba(0,0,0,0.2); }
-            100% { text-shadow: 0 0 20px rgba(255,215,0,0.6); }
         }
 
         .header p {
             font-size: 14px;
             opacity: 0.92;
             margin-top: 10px;
-            font-weight: 500;
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            border-radius: 40px;
+            padding: 8px 16px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
             backdrop-filter: blur(4px);
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .user-info {
+            background: rgba(0,0,0,0.3);
+            backdrop-filter: blur(8px);
+            border-radius: 60px;
+            padding: 8px 16px;
+            margin-top: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 500;
         }
 
         .stats {
             padding: 24px 20px;
-            background: linear-gradient(120deg, #1a4a3a 0%, #0f3327 100%);
+            background: var(--stat-bg);
         }
 
         .stats-grid {
@@ -122,29 +183,18 @@
 
         .stat-card {
             flex: 1;
-            background: rgba(0,0,0,0.3);
+            background: var(--stat-card-bg);
             backdrop-filter: blur(12px);
             border-radius: 28px;
             padding: 18px 12px;
             text-align: center;
             border: 1px solid rgba(255,200,100,0.3);
             transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
-            animation: fadeInScale 0.5s backwards;
-        }
-
-        .stat-card:nth-child(1) { animation-delay: 0.05s; }
-        .stat-card:nth-child(2) { animation-delay: 0.1s; }
-        .stat-card:nth-child(3) { animation-delay: 0.15s; }
-
-        @keyframes fadeInScale {
-            from { opacity: 0; transform: scale(0.9); }
-            to { opacity: 1; transform: scale(1); }
         }
 
         .stat-card:hover {
             transform: translateY(-5px) scale(1.02);
             border-color: #ffb347;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
         }
 
         .stat-number {
@@ -154,7 +204,6 @@
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            letter-spacing: -1px;
         }
 
         .stat-label {
@@ -163,19 +212,16 @@
             margin-top: 8px;
             color: #e0e0e0;
             font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
 
         .search-section {
             padding: 20px 20px 10px 20px;
-            background: white;
         }
 
         .search-box {
             display: flex;
             gap: 10px;
-            background: #f3f4f6;
+            background: var(--search-bg);
             border-radius: 60px;
             padding: 6px 8px 6px 22px;
             align-items: center;
@@ -184,10 +230,8 @@
         }
 
         .search-box:focus-within {
-            background: white;
             border-color: #ff8c00;
             box-shadow: 0 0 0 4px rgba(255,140,0,0.15);
-            transform: scale(1.01);
         }
 
         .search-box input {
@@ -198,28 +242,27 @@
             font-size: 16px;
             outline: none;
             font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .search-box input::placeholder {
+            color: var(--text-secondary);
         }
 
         .search-box button {
-            background: linear-gradient(135deg, #ff8c00, #ff6a00);
+            background: var(--vote-btn-bg);
             border: none;
             color: white;
             padding: 10px 24px;
             border-radius: 50px;
             font-weight: 700;
             cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .search-box button:active {
-            transform: scale(0.94);
         }
 
         .regions-container {
             max-height: 420px;
             overflow-y: auto;
             padding: 0 20px 20px 20px;
-            background: white;
         }
 
         .region-item {
@@ -227,25 +270,17 @@
             justify-content: space-between;
             align-items: center;
             padding: 16px 0;
-            border-bottom: 1px solid #edf2f7;
+            border-bottom: 1px solid var(--region-border);
             cursor: pointer;
             transition: all 0.25s ease;
-            animation: slideInList 0.3s backwards;
-            transform-origin: left;
-        }
-
-        @keyframes slideInList {
-            from { opacity: 0; transform: translateX(-20px); }
-            to { opacity: 1; transform: translateX(0); }
         }
 
         .region-item:hover {
-            background: linear-gradient(90deg, #fff5e6, white);
+            background: var(--region-hover-bg);
             padding-left: 14px;
             padding-right: 14px;
             margin: 0 -14px;
             border-radius: 28px;
-            transform: scale(1.01);
         }
 
         .region-name {
@@ -256,42 +291,25 @@
             gap: 10px;
         }
 
-        .region-badge {
-            font-size: 20px;
-            transition: transform 0.2s;
-        }
-
-        .region-item:hover .region-badge {
-            transform: scale(1.15) rotate(5deg);
-        }
-
         .region-percent {
-            background: linear-gradient(135deg, #2c5a4a, #1e3d32);
+            background: var(--percent-bg);
             color: white;
             padding: 6px 18px;
             border-radius: 40px;
             font-size: 14px;
             font-weight: 800;
-            min-width: 75px;
+            min-width: 70px;
             text-align: center;
-            transition: all 0.2s;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-        }
-
-        .region-item:hover .region-percent {
-            transform: scale(1.05);
-            background: linear-gradient(135deg, #ff8c00, #ff6a00);
         }
 
         .vote-section {
             padding: 20px 20px 28px;
-            background: white;
-            border-top: 1px solid #eef2f6;
+            border-top: 1px solid var(--region-border);
             text-align: center;
         }
 
         .vote-btn {
-            background: linear-gradient(135deg, #ff8c00, #ff5e00);
+            background: var(--vote-btn-bg);
             color: white;
             border: none;
             padding: 18px 28px;
@@ -306,36 +324,28 @@
             align-items: center;
             justify-content: center;
             gap: 12px;
-            letter-spacing: 0.5px;
         }
 
-        .vote-btn:active {
-            transform: scale(0.96);
-            box-shadow: 0 5px 15px -3px rgba(255,140,0,0.5);
-        }
-
+        .vote-btn:active { transform: scale(0.96); }
         .vote-btn.disabled, .vote-btn:disabled {
-            background: linear-gradient(135deg, #aaa, #888);
-            box-shadow: none;
-            transform: none;
-            cursor: not-allowed;
             opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
         }
 
         .selected-info {
             margin-top: 16px;
             font-size: 13px;
             font-weight: 600;
-            background: #fef9e6;
+            background: var(--selected-info-bg);
             padding: 12px;
             border-radius: 60px;
-            color: #b45f06;
-            transition: all 0.2s;
+            color: var(--selected-info-color);
         }
 
         .already-voted {
-            background: #e8f5e9;
-            color: #2e7d32;
+            background: #2e7d32;
+            color: white;
         }
 
         .loading {
@@ -351,92 +361,60 @@
             50% { opacity: 1; }
         }
 
-        .regions-container::-webkit-scrollbar {
-            width: 4px;
-        }
-        .regions-container::-webkit-scrollbar-track {
-            background: #e9ecef;
-            border-radius: 10px;
-        }
-        .regions-container::-webkit-scrollbar-thumb {
-            background: #ff8c00;
-            border-radius: 10px;
-        }
-
         .toast-notify {
             position: fixed;
             bottom: 30px;
             left: 50%;
             transform: translateX(-50%) translateY(100px);
-            background: #1e1e2f;
+            background: var(--toast-bg);
             color: white;
             padding: 12px 24px;
             border-radius: 60px;
             font-weight: 600;
             z-index: 1000;
             transition: transform 0.3s ease;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
             backdrop-filter: blur(12px);
             font-size: 14px;
             white-space: nowrap;
         }
-        .toast-notify.show {
-            transform: translateX(-50%) translateY(0);
-        }
+        .toast-notify.show { transform: translateX(-50%) translateY(0); }
     </style>
 </head>
 <body>
 
 <div class="app">
     <div class="header">
-        <h1>
-            <span>🏔️</span> Земля Вятская <span>🌾</span>
-        </h1>
+        <button class="theme-toggle" id="themeToggle">🌙 Тёмная</button>
+        <h1><span>🏔️</span> Земля Вятская <span>🌾</span></h1>
         <p>Выбери свой город — покажи мощь малой родины!</p>
+        <div class="user-info" id="userInfoBlock"><span>🔄</span> Загрузка профиля...</div>
     </div>
 
     <div class="stats">
         <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-number" id="totalCount">0</div>
-                <div class="stat-label">Вятчан в игре</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number" id="topRegionName">—</div>
-                <div class="stat-label">Лидер</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number" id="topRegionPercent">0%</div>
-                <div class="stat-label">Доля лидера</div>
-            </div>
+            <div class="stat-card"><div class="stat-number" id="totalCount">0</div><div class="stat-label">Вятчан в игре</div></div>
+            <div class="stat-card"><div class="stat-number" id="topRegionName">—</div><div class="stat-label">Лидер</div></div>
+            <div class="stat-card"><div class="stat-number" id="topRegionPercent">0%</div><div class="stat-label">Доля лидера</div></div>
         </div>
     </div>
 
     <div class="search-section">
-        <div class="search-box">
-            <span>🔍</span>
-            <input type="text" id="searchInput" placeholder="Найти свой город или район..." autocomplete="off">
-            <button id="searchClearBtn">✕</button>
-        </div>
+        <div class="search-box"><span>🔍</span><input type="text" id="searchInput" placeholder="Найти свой город или район..."><button id="searchClearBtn">✕</button></div>
     </div>
 
-    <div class="regions-container" id="regionsList">
-        <div class="loading">📡 Загружаем карту Вятки...</div>
-    </div>
+    <div class="regions-container" id="regionsList"><div class="loading">📡 Загружаем карту Вятки...</div></div>
 
     <div class="vote-section">
-        <button class="vote-btn" id="voteBtn">
-            <span>🏆</span> Проголосовать <span>✅</span>
-        </button>
+        <button class="vote-btn" id="voteBtn"><span>🏆</span> Проголосовать <span>✅</span></button>
         <div class="selected-info" id="selectedInfo">Нажми на любой город в списке</div>
     </div>
 </div>
 
 <script>
-    // ==============================================================
-    // ТВОЯ ССЫЛКА НА APPS SCRIPT (ВСТАВЛЕНА)
-    // ==============================================================
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxKvg4TjbclmD9-VE8qv-bt6DljkijxWRsdEdSwGxO4M-482XzrMHnIhwluUmZV49YHUQ/exec";
+    // ==============================================
+    // ТВОЯ ССЫЛКА НА APPS SCRIPT (УЖЕ ВСТАВЛЕНА)
+    // ==============================================
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwxdFvYh9aI2VB8JmE5BN0yfkZztV17AakybMmX_kiLo7qpbosFwEP9JQVb4e0qKjjsoA/exec";
     
     const REGIONS = [
         "Киров", "Кирово-Чепецк", "Слободской", "Вятские Поляны", "Котельнич",
@@ -451,26 +429,9 @@
     let votesData = {};
     let selectedRegion = null;
     let currentSearchQuery = "";
+    let currentUser = { id: null, name: "Кировчанин" };
     let hasVoted = false;
     let votedRegion = null;
-
-    function loadVoteStatus() {
-        const saved = localStorage.getItem("kirov_has_voted");
-        if (saved) {
-            const data = JSON.parse(saved);
-            hasVoted = data.hasVoted;
-            votedRegion = data.votedRegion;
-        }
-    }
-
-    function saveVoteStatus(region) {
-        hasVoted = true;
-        votedRegion = region;
-        localStorage.setItem("kirov_has_voted", JSON.stringify({
-            hasVoted: true,
-            votedRegion: region
-        }));
-    }
 
     function showToast(message, isError = false) {
         let toast = document.querySelector('.toast-notify');
@@ -482,221 +443,148 @@
         toast.textContent = message;
         toast.style.background = isError ? '#c62828' : '#1e4d3a';
         toast.classList.add('show');
-        setTimeout(() => toast.classList.remove('show'), 2500);
+        setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
+    async function getUserInfo() {
+        if (window.vkBridge) {
+            try {
+                const user = await window.vkBridge.send("VKWebAppGetUserInfo");
+                currentUser.id = user.id;
+                currentUser.name = user.first_name + " " + user.last_name;
+                document.getElementById("userInfoBlock").innerHTML = `<span>👤</span> ${currentUser.name}`;
+                const saved = localStorage.getItem(`kirov_voted_${currentUser.id}`);
+                if (saved) {
+                    const voteData = JSON.parse(saved);
+                    hasVoted = true;
+                    votedRegion = voteData.region;
+                    document.getElementById("selectedInfo").innerHTML = `🔒 Ты уже голосовал за ${votedRegion}`;
+                    document.getElementById("selectedInfo").classList.add('already-voted');
+                }
+                return true;
+            } catch(e) { console.log(e); }
+        }
+        document.getElementById("userInfoBlock").innerHTML = `<span>👤</span> Гость`;
+        return false;
     }
 
     async function loadVotesFromSheet() {
         try {
-            const response = await fetch(SCRIPT_URL);
-            const data = await response.json();
-            for (let region of REGIONS) votesData[region] = 0;
-            if (!data.error) {
-                for (let [region, votes] of Object.entries(data)) {
-                    if (REGIONS.includes(region) && typeof votes === 'number') {
-                        votesData[region] = votes;
-                    }
-                }
-            }
+            const r = await fetch(SCRIPT_URL);
+            const data = await r.json();
+            REGIONS.forEach(r => votesData[r] = 0);
+            if (!data.error) for (let [reg, votes] of Object.entries(data)) if (REGIONS.includes(reg)) votesData[reg] = votes;
             return true;
-        } catch (error) {
-            console.error("Ошибка загрузки:", error);
-            return false;
-        }
+        } catch(e) { return false; }
     }
 
     async function sendVoteToSheet(region) {
-        await fetch(SCRIPT_URL, {
+        const r = await fetch(SCRIPT_URL, {
             method: 'POST',
-            mode: 'no-cors',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ region: region })
+            body: JSON.stringify({ region, userId: currentUser.id, userName: currentUser.name })
         });
+        const res = await r.json();
+        if (res.error === "already_voted") throw new Error(res.message);
         return true;
     }
 
-    function getTotalVotes() {
-        return Object.values(votesData).reduce((sum, v) => sum + v, 0);
+    function getTotal() { return Object.values(votesData).reduce((a,b)=>a+b,0); }
+    function getTop() {
+        let top=null, max=-1;
+        for(let [name,count] of Object.entries(votesData)) if(count>max) { max=count; top=name; }
+        const total=getTotal();
+        return { name: top, percent: total>0&&top ? Math.round(max/total*100) : 0 };
+    }
+    function animateValue(el, start, end, suf="") {
+        if(!el) return;
+        let cur=start, step=Math.ceil((end-start)/25);
+        let timer=setInterval(()=>{
+            cur+=step;
+            if((step>0&&cur>=end)||(step<0&&cur<=end)) { cur=end; el.innerText=cur+suf; clearInterval(timer); }
+            else el.innerText=cur+suf;
+        },15);
     }
 
-    function getTopRegionInfo() {
-        let top = null;
-        let maxCount = -1;
-        for (let [name, count] of Object.entries(votesData)) {
-            if (count > maxCount) { maxCount = count; top = name; }
-        }
-        const total = getTotalVotes();
-        const percent = total > 0 && top ? Math.round((maxCount / total) * 100) : 0;
-        return { name: top, count: maxCount, percent };
-    }
-
-    function animateValue(element, start, end, suffix = "") {
-        if (!element) return;
-        let current = start;
-        const step = Math.ceil((end - start) / 25);
-        const timer = setInterval(() => {
-            current += step;
-            if ((step > 0 && current >= end) || (step < 0 && current <= end)) {
-                current = end;
-                element.innerText = current + suffix;
-                clearInterval(timer);
-            } else {
-                element.innerText = current + suffix;
-            }
-        }, 15);
-    }
-
-    function renderRegionsList() {
+    function renderRegions() {
         const container = document.getElementById("regionsList");
         const search = currentSearchQuery.toLowerCase();
-        let filtered = REGIONS;
-        if (search) filtered = REGIONS.filter(r => r.toLowerCase().includes(search));
-
-        if (filtered.length === 0) {
-            container.innerHTML = `<div class="loading">😔 Ничего не найдено...</div>`;
-            return;
-        }
-
-        const total = getTotalVotes();
+        let filtered = REGIONS.filter(r => !search || r.toLowerCase().includes(search));
+        if(!filtered.length) { container.innerHTML='<div class="loading">😔 Ничего не найдено</div>'; return; }
+        const total = getTotal();
         let html = "";
-        for (let region of filtered) {
-            const count = votesData[region] || 0;
-            const percent = total === 0 ? 0 : Math.round((count / total) * 100);
-            const isSelected = (selectedRegion === region);
-            let badgeEmoji = "📍";
-            if (region === "Киров") badgeEmoji = "🏙️";
-            else if (region === "Кирово-Чепецк") badgeEmoji = "🏭";
-            else if (region.includes("ское") || region.includes("ский")) badgeEmoji = "🌾";
-
-            const votedMark = (hasVoted && votedRegion === region) ? ' ✅' : '';
-
-            html += `
-                <div class="region-item" data-region="${region}" style="animation-delay: ${Math.random() * 0.05}s">
-                    <div class="region-name">
-                        <span class="region-badge">${badgeEmoji}</span>
-                        <span style="${isSelected ? 'color:#ff8c00; font-weight:800;' : ''}">${region}${votedMark} ${isSelected ? '✓' : ''}</span>
-                    </div>
-                    <div class="region-percent">${percent}%</div>
-                </div>
-            `;
+        for(let region of filtered) {
+            const percent = total===0 ? 0 : Math.round((votesData[region]||0)/total*100);
+            const selected = selectedRegion===region;
+            let emoji = "📍";
+            if(region==="Киров") emoji="🏙️";
+            else if(region==="Кирово-Чепецк") emoji="🏭";
+            else if(region.includes("ское")) emoji="🌾";
+            const votedMark = (hasVoted && votedRegion===region) ? ' ✅' : '';
+            html += `<div class="region-item" data-region="${region}"><div class="region-name"><span>${emoji}</span><span style="${selected?'color:#ff8c00;font-weight:800':''}">${region}${votedMark} ${selected?'✓':''}</span></div><div class="region-percent">${percent}%</div></div>`;
         }
         container.innerHTML = html;
-
-        document.querySelectorAll('.region-item').forEach(el => {
-            el.addEventListener('click', () => {
-                if (hasVoted) {
-                    showToast(`⚠️ Ты уже голосовал за ${votedRegion}! Нельзя голосовать дважды.`, true);
-                    return;
-                }
-                const region = el.getAttribute('data-region');
-                selectedRegion = region;
-                document.getElementById("selectedInfo").innerHTML = `✅ Твой выбор: <strong>${selectedRegion}</strong>. Жми кнопку ниже!`;
-                renderRegionsList();
+        document.querySelectorAll('.region-item').forEach(el=>{
+            el.addEventListener('click',()=>{
+                if(hasVoted) { showToast(`⚠️ Ты уже голосовал за ${votedRegion}!`,true); return; }
+                selectedRegion = el.getAttribute('data-region');
+                document.getElementById("selectedInfo").innerHTML = `✅ Твой выбор: <strong>${selectedRegion}</strong>`;
+                renderRegions();
             });
         });
     }
 
-    async function updateStatsUI() {
-        const total = getTotalVotes();
-        const totalEl = document.getElementById("totalCount");
-        const oldTotal = parseInt(totalEl.innerText) || 0;
-        animateValue(totalEl, oldTotal, total, "");
-
-        const topInfo = getTopRegionInfo();
-        const topNameEl = document.getElementById("topRegionName");
-        const topPercentEl = document.getElementById("topRegionPercent");
-        
-        if (topInfo.name) {
-            topNameEl.innerText = topInfo.name;
-            animateValue(topPercentEl, parseInt(topPercentEl.innerText) || 0, topInfo.percent, "%");
-        } else {
-            topNameEl.innerText = "—";
-            topPercentEl.innerText = "0%";
-        }
+    async function updateStats() {
+        const total = getTotal();
+        animateValue(document.getElementById("totalCount"), parseInt(document.getElementById("totalCount").innerText)||0, total, "");
+        const top = getTop();
+        document.getElementById("topRegionName").innerText = top.name || "—";
+        animateValue(document.getElementById("topRegionPercent"), parseInt(document.getElementById("topRegionPercent").innerText)||0, top.percent, "%");
     }
 
     async function castVote() {
-        if (hasVoted) {
-            showToast(`❌ Ты уже голосовал за ${votedRegion}! Голосовать повторно нельзя.`, true);
-            return;
-        }
-        if (!selectedRegion) {
-            showToast("🌾 Сначала выбери свой город или район!", true);
-            return;
-        }
-
+        if(hasVoted) { showToast(`❌ Ты уже голосовал за ${votedRegion}!`,true); return; }
+        if(!selectedRegion) { showToast("🌾 Сначала выбери город!",true); return; }
+        if(!currentUser.id) { showToast("⚠️ Ошибка авторизации VK",true); return; }
         const btn = document.getElementById("voteBtn");
-        btn.disabled = true;
-        btn.classList.add('disabled');
-        
+        btn.disabled=true; btn.classList.add('disabled');
         try {
             await sendVoteToSheet(selectedRegion);
             votesData[selectedRegion]++;
-            saveVoteStatus(selectedRegion);
-            renderRegionsList();
-            await updateStatsUI();
-            
-            showToast(`🎉 Спасибо! Твой голос за ${selectedRegion} учтён!`, false);
-            
-            document.getElementById("selectedInfo").innerHTML = `✨ Ты проголосовал за <strong>${selectedRegion}</strong>. Спасибо за участие! ✨`;
+            hasVoted=true; votedRegion=selectedRegion;
+            localStorage.setItem(`kirov_voted_${currentUser.id}`, JSON.stringify({ region: selectedRegion, timestamp: Date.now() }));
+            renderRegions(); await updateStats();
+            showToast(`🎉 Спасибо, ${currentUser.name}! Голос за ${selectedRegion} учтён!`, false);
+            document.getElementById("selectedInfo").innerHTML = `✨ Ты проголосовал за ${selectedRegion} ✨`;
             document.getElementById("selectedInfo").classList.add('already-voted');
-            selectedRegion = null;
-            renderRegionsList();
-            
-        } catch (error) {
-            showToast("Ошибка при отправке голоса. Попробуй ещё раз.", true);
-        } finally {
-            btn.disabled = false;
-            btn.classList.remove('disabled');
-        }
+            selectedRegion=null; renderRegions();
+        } catch(e) { showToast(e.message, true); }
+        finally { btn.disabled=false; btn.classList.remove('disabled'); }
     }
 
     async function init() {
-        loadVoteStatus();
-        document.getElementById("regionsList").innerHTML = '<div class="loading">📡 Загружаем голоса кировчан...</div>';
+        await getUserInfo();
+        document.getElementById("regionsList").innerHTML='<div class="loading">📡 Загрузка...</div>';
         await loadVotesFromSheet();
-        renderRegionsList();
-        updateStatsUI();
-        
-        if (hasVoted) {
-            document.getElementById("selectedInfo").innerHTML = `🔒 Ты уже голосовал за <strong>${votedRegion}</strong>. Спасибо за выбор!`;
-            document.getElementById("selectedInfo").classList.add('already-voted');
-        }
-        
-        const searchInput = document.getElementById("searchInput");
-        searchInput.addEventListener("input", (e) => {
-            currentSearchQuery = e.target.value;
-            renderRegionsList();
-        });
-        
-        document.getElementById("searchClearBtn").addEventListener("click", () => {
-            currentSearchQuery = "";
-            searchInput.value = "";
-            renderRegionsList();
-        });
-        
+        renderRegions(); updateStats();
+        document.getElementById("searchInput").addEventListener("input", e=>{ currentSearchQuery=e.target.value; renderRegions(); });
+        document.getElementById("searchClearBtn").addEventListener("click", ()=>{ document.getElementById("searchInput").value=""; currentSearchQuery=""; renderRegions(); });
         document.getElementById("voteBtn").addEventListener("click", castVote);
     }
-    
     init();
-    
-    if (typeof window !== "undefined" && window.vkBridge) {
-        window.vkBridge.send("VKWebAppInit").catch(e => console.log(e));
-    }
-</script>
+    if(window.vkBridge) window.vkBridge.send("VKWebAppInit").catch(e=>console.log(e));
 
-<script>
-    for(let i = 0; i < 24; i++) {
-        let particle = document.createElement('div');
-        particle.classList.add('particle');
-        let size = Math.random() * 120 + 30;
-        particle.style.width = size + 'px';
-        particle.style.height = size + 'px';
-        particle.style.left = Math.random() * 100 + '%';
-        particle.style.bottom = '-' + (Math.random() * 40 + 10) + 'px';
-        particle.style.animationDuration = (Math.random() * 10 + 6) + 's';
-        particle.style.animationDelay = Math.random() * 8 + 's';
-        document.body.appendChild(particle);
-    }
+    // Тёмная тема
+    const themeToggle = document.getElementById('themeToggle');
+    if(localStorage.getItem('theme') === 'dark') document.body.classList.add('dark');
+    themeToggle.addEventListener('click', () => {
+        document.body.classList.toggle('dark');
+        localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+        themeToggle.innerText = document.body.classList.contains('dark') ? '☀️ Светлая' : '🌙 Тёмная';
+    });
+    themeToggle.innerText = document.body.classList.contains('dark') ? '☀️ Светлая' : '🌙 Тёмная';
+
+    for(let i=0;i<20;i++){let p=document.createElement('div');p.classList.add('particle');let s=Math.random()*100+30;p.style.width=s+'px';p.style.height=s+'px';p.style.left=Math.random()*100+'%';p.style.bottom='-'+Math.random()*40+'px';p.style.animationDuration=Math.random()*10+6+'s';p.style.animationDelay=Math.random()*8+'s';document.body.appendChild(p);}
 </script>
 </body>
 </html>
