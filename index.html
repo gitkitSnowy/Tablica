@@ -410,9 +410,9 @@
 
 <script>
     // ==============================================
-    // ТВОЯ ССЫЛКА НА APPS SCRIPT
+    // ⚠️ ВСТАВЬ СВОЮ ССЫЛКУ НА APPS SCRIPT ⚠️
     // ==============================================
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwxdFvYh9aI2VB8JmE5BN0yfkZztV17AakybMmX_kiLo7qpbosFwEP9JQVb4e0qKjjsoA/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyu3gHjAR0YXFo0snsn2641gAbkpi_xbeqn2psOHLvek_JefdV6RRk0Agu2_KezpnWJWQ/exec";
     
     const REGIONS = [
         "Киров", "Кирово-Чепецк", "Слободской", "Вятские Поляны", "Котельнич",
@@ -444,25 +444,20 @@
         setTimeout(() => toast.classList.remove('show'), 3000);
     }
 
-    // Генерация УНИКАЛЬНОГО ID пользователя (создаётся 1 раз и сохраняется навсегда)
+    // Уникальный ID пользователя (сохраняется навсегда)
     function getOrCreateUniqueUserId() {
         let userId = localStorage.getItem("unique_user_id");
         if (!userId) {
-            // Создаём уникальный ID: случайная строка + timestamp
             const randomPart = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 8);
             const timestamp = Date.now();
             userId = "user_" + randomPart + "_" + timestamp;
             localStorage.setItem("unique_user_id", userId);
-            console.log("Создан новый уникальный ID:", userId);
         }
         return userId;
     }
 
     async function getUserInfo() {
-        // Получаем уникальный ID (создаётся при первом заходе)
         const uniqueId = getOrCreateUniqueUserId();
-        
-        // Проверяем, голосовал ли уже этот пользователь
         const savedVote = localStorage.getItem(`vote_${uniqueId}`);
         if (savedVote) {
             const voteData = JSON.parse(savedVote);
@@ -471,44 +466,72 @@
             document.getElementById("selectedInfo").innerHTML = `🔒 Ты уже голосовал за ${votedRegion}`;
             document.getElementById("selectedInfo").classList.add('already-voted');
         }
-        
-        // Показываем пользователю его короткий ID (для информации)
         const shortId = uniqueId.slice(-12);
         document.getElementById("userInfoBlock").innerHTML = `<span>🆔</span> ID: ${shortId}`;
-        
         currentUser.id = uniqueId;
-        currentUser.name = "Кировчанин";
-        
         return true;
     }
 
+    // Загрузка голосов через JSONP
     async function loadVotesFromSheet() {
-        try {
-            const r = await fetch(SCRIPT_URL);
-            const data = await r.json();
-            REGIONS.forEach(r => votesData[r] = 0);
-            if (!data.error) for (let [reg, votes] of Object.entries(data)) if (REGIONS.includes(reg)) votesData[reg] = votes;
-            return true;
-        } catch(e) { 
-            console.error("Ошибка загрузки:", e);
-            return false; 
-        }
+        return new Promise((resolve) => {
+            const callbackName = 'load_callback_' + Date.now();
+            const url = SCRIPT_URL + '?callback=' + callbackName;
+            
+            window[callbackName] = function(data) {
+                delete window[callbackName];
+                document.body.removeChild(script);
+                REGIONS.forEach(r => votesData[r] = 0);
+                if (!data.error) {
+                    for (let [reg, votes] of Object.entries(data)) {
+                        if (REGIONS.includes(reg) && typeof votes === 'number') {
+                            votesData[reg] = votes;
+                        }
+                    }
+                }
+                resolve(true);
+            };
+            
+            const script = document.createElement('script');
+            script.src = url;
+            script.onerror = () => {
+                delete window[callbackName];
+                document.body.removeChild(script);
+                resolve(false);
+            };
+            document.body.appendChild(script);
+        });
     }
 
+    // Отправка голоса через JSONP
     async function sendVoteToSheet(region) {
-        const r = await fetch(SCRIPT_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-                region, 
-                userId: currentUser.id, 
-                userName: currentUser.name,
-                timestamp: new Date().toISOString()
-            })
+        return new Promise((resolve, reject) => {
+            const callbackName = 'vote_callback_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+            const url = SCRIPT_URL + 
+                '?callback=' + callbackName +
+                '&region=' + encodeURIComponent(region) +
+                '&userId=' + encodeURIComponent(currentUser.id) +
+                '&userName=' + encodeURIComponent(currentUser.name);
+            
+            window[callbackName] = function(response) {
+                delete window[callbackName];
+                document.body.removeChild(script);
+                if (response && response.error === "already_voted") {
+                    reject(new Error(response.message));
+                } else {
+                    resolve(true);
+                }
+            };
+            
+            const script = document.createElement('script');
+            script.src = url;
+            script.onerror = () => {
+                delete window[callbackName];
+                document.body.removeChild(script);
+                reject(new Error('Ошибка соединения. Проверьте интернет.'));
+            };
+            document.body.appendChild(script);
         });
-        const res = await r.json();
-        if (res.error === "already_voted") throw new Error(res.message);
-        return true;
     }
 
     function getTotal() { return Object.values(votesData).reduce((a,b)=>a+b,0); }
@@ -567,7 +590,7 @@
     async function castVote() {
         if(hasVoted) { showToast(`❌ Ты уже голосовал за ${votedRegion}!`,true); return; }
         if(!selectedRegion) { showToast("🌾 Сначала выбери город!",true); return; }
-        if(!currentUser.id) { showToast("⚠️ Ошибка идентификации пользователя",true); return; }
+        if(!currentUser.id) { showToast("⚠️ Ошибка идентификации",true); return; }
         
         const btn = document.getElementById("voteBtn");
         btn.disabled=true; btn.classList.add('disabled');
@@ -575,14 +598,7 @@
             await sendVoteToSheet(selectedRegion);
             votesData[selectedRegion]++;
             hasVoted=true; votedRegion=selectedRegion;
-            
-            // Сохраняем голос, привязанный к уникальному ID
-            localStorage.setItem(`vote_${currentUser.id}`, JSON.stringify({ 
-                region: selectedRegion, 
-                timestamp: Date.now(),
-                userId: currentUser.id
-            }));
-            
+            localStorage.setItem(`vote_${currentUser.id}`, JSON.stringify({ region: selectedRegion, timestamp: Date.now() }));
             renderRegions(); await updateStats();
             showToast(`🎉 Спасибо! Твой голос за ${selectedRegion} учтён!`, false);
             document.getElementById("selectedInfo").innerHTML = `✨ Ты проголосовал за ${selectedRegion} ✨`;
@@ -604,7 +620,6 @@
         document.getElementById("voteBtn").addEventListener("click", castVote);
     }
     init();
-    if(window.vkBridge) window.vkBridge.send("VKWebAppInit").catch(e=>console.log("VK не инициализирован"));
 
     // Тёмная тема
     const themeToggle = document.getElementById('themeToggle');
@@ -616,6 +631,7 @@
     });
     themeToggle.innerText = document.body.classList.contains('dark') ? '☀️ Светлая' : '🌙 Тёмная';
 
+    // Плавающие частицы
     for(let i=0;i<20;i++){let p=document.createElement('div');p.classList.add('particle');let s=Math.random()*100+30;p.style.width=s+'px';p.style.height=s+'px';p.style.left=Math.random()*100+'%';p.style.bottom='-'+Math.random()*40+'px';p.style.animationDuration=Math.random()*10+6+'s';p.style.animationDelay=Math.random()*8+'s';document.body.appendChild(p);}
 </script>
 </body>
