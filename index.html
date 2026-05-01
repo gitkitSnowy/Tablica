@@ -205,6 +205,11 @@
             border: 1px solid transparent;
         }
 
+        .search-box:focus-within {
+            border-color: #ff8c00;
+            box-shadow: 0 0 0 4px rgba(255,140,0,0.15);
+        }
+
         .search-box input {
             flex: 1;
             border: none;
@@ -293,8 +298,6 @@
             gap: 12px;
         }
 
-        .vote-btn:active { transform: scale(0.96); }
-
         .selected-info {
             margin-top: 16px;
             font-size: 13px;
@@ -321,96 +324,6 @@
             font-size: 14px;
         }
         .toast-notify.show { transform: translateX(-50%) translateY(0); }
-
-        /* --- СТИЛИ ЧАТА --- */
-        #ai-chat-btn {
-            position: fixed;
-            bottom: 25px;
-            right: 25px;
-            width: 60px;
-            height: 60px;
-            background: var(--vote-btn-bg);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 10px 25px rgba(255,140,0,0.4);
-            cursor: pointer;
-            z-index: 999;
-            font-size: 24px;
-            animation: float 3s infinite ease-in-out;
-        }
-
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-
-        #ai-chat-window {
-            position: fixed;
-            bottom: 100px;
-            right: 25px;
-            width: 320px;
-            height: 450px;
-            background: var(--card-bg);
-            border-radius: 30px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
-            display: none;
-            flex-direction: column;
-            z-index: 1000;
-            border: 1px solid var(--region-border);
-            backdrop-filter: blur(10px);
-            overflow: hidden;
-        }
-
-        #ai-chat-window.active { display: flex; animation: slideIn 0.3s ease; }
-        @keyframes slideIn { from { opacity:0; transform: translateY(20px); } to { opacity:1; transform: translateY(0); } }
-
-        .chat-header {
-            background: var(--header-bg);
-            padding: 15px;
-            color: white;
-            font-weight: bold;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .chat-msgs {
-            flex: 1;
-            padding: 15px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            font-size: 14px;
-        }
-
-        .msg { padding: 10px 14px; border-radius: 18px; max-width: 85%; }
-        .msg.bot { background: var(--search-bg); color: var(--text-primary); align-self: flex-start; }
-        .msg.user { background: var(--vote-btn-bg); color: white; align-self: flex-end; }
-
-        .chat-input {
-            padding: 15px;
-            border-top: 1px solid var(--region-border);
-            display: flex;
-            gap: 8px;
-        }
-
-        .chat-input input {
-            flex: 1;
-            border: none;
-            background: var(--search-bg);
-            padding: 10px 15px;
-            border-radius: 20px;
-            outline: none;
-            color: var(--text-primary);
-        }
-
-        .chat-input button {
-            background: var(--vote-btn-bg);
-            border: none;
-            color: white;
-            padding: 0 15px;
-            border-radius: 20px;
-            cursor: pointer;
-        }
     </style>
 </head>
 <body>
@@ -439,29 +352,11 @@
 
     <div class="vote-section">
         <button class="vote-btn" id="voteBtn"><span>🏆</span> Проголосовать <span>✅</span></button>
-        <div class="selected-info" id="selectedInfo">Нажми на город в списке</div>
-    </div>
-</div>
-
-<div id="ai-chat-btn">💬</div>
-<div id="ai-chat-window">
-    <div class="chat-header"><span>🤖 Вятский Помощник</span><span id="close-chat" style="cursor:pointer">✕</span></div>
-    <div class="chat-msgs" id="chatMsgs">
-        <div class="msg bot">Здорово, земляк! Я ИИ-помощник. Спрашивай про районы Вятки! 🏔️</div>
-    </div>
-    <div class="chat-input">
-        <input type="text" id="chatInp" placeholder="Твой вопрос...">
-        <button id="chatSend">🚀</button>
+        <div class="selected-info" id="selectedInfo">Нажми на любой город в списке</div>
     </div>
 </div>
 
 <script>
-    // ==============================================
-    // 🔐 ВЯТСКИЙ КИБЕР-ЩИТ v2.5 (ЗАШИФРОВАННЫЙ КЛЮЧ)
-    // ==============================================
-    const _0x_mask = ['A','I','z','a','S','y','C','o','P','T','X','H','f','r','H','n','q','X','f','7','4','S','P','c','N','h','f','3','l','n','d','_','C','x','B','I','g','o','U'];
-    const getK = () => _0x_mask.join('');
-
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyu3gHjAR0YXFo0snsn2641gAbkpi_xbeqn2psOHLvek_JefdV6RRk0Agu2_KezpnWJWQ/exec";
     const REGIONS = ["Киров", "Кирово-Чепецк", "Слободской", "Вятские Поляны", "Котельнич", "Яранск", "Омутнинск", "Советск", "Уржум", "Нолинск", "Малмыж", "Белая Холуница", "Луза", "Кирс", "Мураши", "Зуевка", "Орлов", "Кикнур", "Тужа", "Санчурск", "Богородское", "Суна", "Верхошижемье", "Кумены", "Фалёнки", "Афанасьево", "Нагорск", "Подосиновец", "Даровской", "Шабалино", "Нема", "Опарино", "Юрья", "Кстинино", "Пижанка", "Лебяжье", "Свеча", "Стрижи", "Лянгасово", "Дороничи"];
 
@@ -469,38 +364,6 @@
     let currentUser = { id: localStorage.getItem("unique_user_id") || "user_" + Math.random().toString(36).substr(2, 9) + "_" + Date.now() };
     localStorage.setItem("unique_user_id", currentUser.id);
 
-    // --- ЛОГИКА ИИ ---
-    async function askAI(q) {
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${getK()}`;
-        const res = await fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ contents: [{ parts: [{ text: `Ты - эксперт по Кировской области. Отвечай кратко, душевно. Юзер: ${q}` }] }] })
-        });
-        const data = await res.json();
-        return data.candidates[0].content.parts[0].text;
-    }
-
-    const chatBtn = document.getElementById('ai-chat-btn');
-    const chatWin = document.getElementById('ai-chat-window');
-    const chatInp = document.getElementById('chatInp');
-    const chatSend = document.getElementById('chatSend');
-    const chatMsgs = document.getElementById('chatMsgs');
-
-    chatBtn.onclick = () => chatWin.classList.toggle('active');
-    document.getElementById('close-chat').onclick = () => chatWin.classList.remove('active');
-
-    async function sendToAI() {
-        const text = chatInp.value.trim(); if(!text) return;
-        addM(text, 'user'); chatInp.value = '';
-        try { const r = await askAI(text); addM(r, 'bot'); } 
-        catch(e) { addM("Ой, Вятка-река разлилась, связи нет. Попробуй позже!", 'bot'); }
-    }
-    function addM(t, s) { const d = document.createElement('div'); d.className = `msg ${s}`; d.innerText = t; chatMsgs.appendChild(d); chatMsgs.scrollTop = chatMsgs.scrollHeight; }
-    chatSend.onclick = sendToAI;
-    chatInp.onkeypress = (e) => e.key === 'Enter' && sendToAI();
-
-    // --- ОСНОВНАЯ ЛОГИКА КАРТЫ ---
     function showToast(m, err=false) {
         let t = document.querySelector('.toast-notify') || document.createElement('div');
         t.className = 'toast-notify'; document.body.appendChild(t);
@@ -526,13 +389,18 @@
         const total = Object.values(votesData).reduce((a,b)=>a+b,0);
         cont.innerHTML = filtered.map(r => {
             const p = total === 0 ? 0 : Math.round((votesData[r]||0)/total*100);
-            return `<div class="region-item" onclick="sel('${r}')"><div class="region-name">📍 ${r === selectedRegion ? '<b>'+r+'</b>' : r}</div><div class="region-percent">${p}%</div></div>`;
+            const selected = selectedRegion === r;
+            return `<div class="region-item" onclick="sel('${r}')"><div class="region-name">📍 <span style="${selected?'color:#ff8c00;font-weight:800':''}">${r}</span></div><div class="region-percent">${p}%</div></div>`;
         }).join('');
         document.getElementById("totalCount").innerText = total;
+        document.getElementById("userInfoBlock").innerText = "🆔 ID: " + currentUser.id.slice(-12);
+        const top = Object.entries(votesData).reduce((a, b) => b[1] > a[1] ? b : a, ["—", 0]);
+        document.getElementById("topRegionName").innerText = top[0];
+        document.getElementById("topRegionPercent").innerText = total > 0 ? Math.round(top[1]/total*100) + "%" : "0%";
     }
 
     window.sel = (r) => {
-        if(hasVoted) return showToast("Уже голосовал!", true);
+        if(hasVoted) return showToast("Уже голосовал за " + votedRegion + "!", true);
         selectedRegion = r;
         document.getElementById("selectedInfo").innerHTML = `Выбран: <b>${r}</b>`;
         render();
@@ -540,16 +408,20 @@
 
     document.getElementById("voteBtn").onclick = async () => {
         if(!selectedRegion || hasVoted) return showToast("Выбери город!", true);
-        const b = document.getElementById("voteBtn"); b.disabled = true;
         const url = `${SCRIPT_URL}?callback=v&region=${encodeURIComponent(selectedRegion)}&userId=${currentUser.id}`;
         window.v = () => { hasVoted = true; votedRegion = selectedRegion; localStorage.setItem("v", selectedRegion); showToast("Принято!"); loadVotes().then(render); };
         const s = document.createElement('script'); s.src = url; document.body.appendChild(s);
     };
 
     document.getElementById("searchInput").oninput = (e) => { currentSearchQuery = e.target.value; render(); };
-    document.getElementById("themeToggle").onclick = () => { document.body.classList.toggle('dark'); localStorage.setItem('th', document.body.classList.contains('dark') ? 'd' : 'l'); };
-    if(localStorage.getItem('th') === 'd') document.body.classList.add('dark');
-    if(localStorage.getItem("v")) { hasVoted = true; votedRegion = localStorage.getItem("v"); document.getElementById("selectedInfo").innerText = "Твой выбор: " + votedRegion; }
+    document.getElementById("themeToggle").onclick = () => {
+        document.body.classList.toggle('dark');
+        document.getElementById("themeToggle").innerText = document.body.classList.contains('dark') ? '☀️ Светлая' : '🌙 Тёмная';
+    };
+    if(localStorage.getItem("v")) { 
+        hasVoted = true; votedRegion = localStorage.getItem("v"); 
+        document.getElementById("selectedInfo").innerText = "Твой выбор: " + votedRegion; 
+    }
 
     loadVotes().then(render);
     for(let i=0;i<15;i++){ let p=document.createElement('div'); p.className='particle'; p.style.width=Math.random()*60+20+'px'; p.style.height=p.style.width; p.style.left=Math.random()*100+'%'; p.style.bottom='-50px'; p.style.animationDelay=Math.random()*5+'s'; document.body.appendChild(p); }
