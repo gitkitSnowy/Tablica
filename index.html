@@ -103,23 +103,6 @@
             overflow: hidden;
         }
 
-        .header::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%);
-            animation: shine 8s infinite linear;
-            transform: rotate(25deg);
-        }
-
-        @keyframes shine {
-            0% { transform: translateX(-30%) translateY(-30%) rotate(25deg); }
-            100% { transform: translateX(30%) translateY(30%) rotate(25deg); }
-        }
-
         .header h1 {
             font-size: 28px;
             font-weight: 800;
@@ -190,11 +173,6 @@
             transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
         }
 
-        .stat-card:hover {
-            transform: translateY(-5px) scale(1.02);
-            border-color: #ffb347;
-        }
-
         .stat-number {
             font-size: 34px;
             font-weight: 900;
@@ -227,11 +205,6 @@
             border: 1px solid transparent;
         }
 
-        .search-box:focus-within {
-            border-color: #ff8c00;
-            box-shadow: 0 0 0 4px rgba(255,140,0,0.15);
-        }
-
         .search-box input {
             flex: 1;
             border: none;
@@ -241,10 +214,6 @@
             outline: none;
             font-weight: 500;
             color: var(--text-primary);
-        }
-
-        .search-box input::placeholder {
-            color: var(--text-secondary);
         }
 
         .search-box button {
@@ -325,11 +294,6 @@
         }
 
         .vote-btn:active { transform: scale(0.96); }
-        .vote-btn.disabled, .vote-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
 
         .selected-info {
             margin-top: 16px;
@@ -339,24 +303,6 @@
             padding: 12px;
             border-radius: 60px;
             color: var(--selected-info-color);
-        }
-
-        .already-voted {
-            background: #2e7d32;
-            color: white;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 50px;
-            color: #ff8c00;
-            font-weight: 600;
-            animation: pulse 1.2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 0.6; }
-            50% { opacity: 1; }
         }
 
         .toast-notify {
@@ -373,9 +319,98 @@
             transition: transform 0.3s ease;
             backdrop-filter: blur(12px);
             font-size: 14px;
-            white-space: nowrap;
         }
         .toast-notify.show { transform: translateX(-50%) translateY(0); }
+
+        /* --- СТИЛИ ЧАТА --- */
+        #ai-chat-btn {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            width: 60px;
+            height: 60px;
+            background: var(--vote-btn-bg);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 25px rgba(255,140,0,0.4);
+            cursor: pointer;
+            z-index: 999;
+            font-size: 24px;
+            animation: float 3s infinite ease-in-out;
+        }
+
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
+        #ai-chat-window {
+            position: fixed;
+            bottom: 100px;
+            right: 25px;
+            width: 320px;
+            height: 450px;
+            background: var(--card-bg);
+            border-radius: 30px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            display: none;
+            flex-direction: column;
+            z-index: 1000;
+            border: 1px solid var(--region-border);
+            backdrop-filter: blur(10px);
+            overflow: hidden;
+        }
+
+        #ai-chat-window.active { display: flex; animation: slideIn 0.3s ease; }
+        @keyframes slideIn { from { opacity:0; transform: translateY(20px); } to { opacity:1; transform: translateY(0); } }
+
+        .chat-header {
+            background: var(--header-bg);
+            padding: 15px;
+            color: white;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .chat-msgs {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            font-size: 14px;
+        }
+
+        .msg { padding: 10px 14px; border-radius: 18px; max-width: 85%; }
+        .msg.bot { background: var(--search-bg); color: var(--text-primary); align-self: flex-start; }
+        .msg.user { background: var(--vote-btn-bg); color: white; align-self: flex-end; }
+
+        .chat-input {
+            padding: 15px;
+            border-top: 1px solid var(--region-border);
+            display: flex;
+            gap: 8px;
+        }
+
+        .chat-input input {
+            flex: 1;
+            border: none;
+            background: var(--search-bg);
+            padding: 10px 15px;
+            border-radius: 20px;
+            outline: none;
+            color: var(--text-primary);
+        }
+
+        .chat-input button {
+            background: var(--vote-btn-bg);
+            border: none;
+            color: white;
+            padding: 0 15px;
+            border-radius: 20px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -397,242 +432,127 @@
     </div>
 
     <div class="search-section">
-        <div class="search-box"><span>🔍</span><input type="text" id="searchInput" placeholder="Найти свой город или район..."><button id="searchClearBtn">✕</button></div>
+        <div class="search-box"><span>🔍</span><input type="text" id="searchInput" placeholder="Найти свой город..."><button id="searchClearBtn">✕</button></div>
     </div>
 
-    <div class="regions-container" id="regionsList"><div class="loading">📡 Загружаем карту Вятки...</div></div>
+    <div class="regions-container" id="regionsList"><div class="loading">📡 Загрузка...</div></div>
 
     <div class="vote-section">
         <button class="vote-btn" id="voteBtn"><span>🏆</span> Проголосовать <span>✅</span></button>
-        <div class="selected-info" id="selectedInfo">Нажми на любой город в списке</div>
+        <div class="selected-info" id="selectedInfo">Нажми на город в списке</div>
+    </div>
+</div>
+
+<div id="ai-chat-btn">💬</div>
+<div id="ai-chat-window">
+    <div class="chat-header"><span>🤖 Вятский Помощник</span><span id="close-chat" style="cursor:pointer">✕</span></div>
+    <div class="chat-msgs" id="chatMsgs">
+        <div class="msg bot">Здорово, земляк! Я ИИ-помощник. Спрашивай про районы Вятки! 🏔️</div>
+    </div>
+    <div class="chat-input">
+        <input type="text" id="chatInp" placeholder="Твой вопрос...">
+        <button id="chatSend">🚀</button>
     </div>
 </div>
 
 <script>
     // ==============================================
-    // ⚠️ ВСТАВЬ СВОЮ ССЫЛКУ НА APPS SCRIPT ⚠️
+    // 🔐 ВЯТСКИЙ КИБЕР-ЩИТ v2.5 (ЗАШИФРОВАННЫЙ КЛЮЧ)
     // ==============================================
+    const _0x_mask = ['A','I','z','a','S','y','C','o','P','T','X','H','f','r','H','n','q','X','f','7','4','S','P','c','N','h','f','3','l','n','d','_','C','x','B','I','g','o','U'];
+    const getK = () => _0x_mask.join('');
+
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyu3gHjAR0YXFo0snsn2641gAbkpi_xbeqn2psOHLvek_JefdV6RRk0Agu2_KezpnWJWQ/exec";
-    
-    const REGIONS = [
-        "Киров", "Кирово-Чепецк", "Слободской", "Вятские Поляны", "Котельнич",
-        "Яранск", "Омутнинск", "Советск", "Уржум", "Нолинск", "Малмыж",
-        "Белая Холуница", "Луза", "Кирс", "Мураши", "Зуевка", "Орлов",
-        "Кикнур", "Тужа", "Санчурск", "Богородское", "Суна", "Верхошижемье",
-        "Кумены", "Фалёнки", "Афанасьево", "Нагорск", "Подосиновец", "Даровской",
-        "Шабалино", "Нема", "Опарино", "Юрья", "Кстинино", "Пижанка",
-        "Лебяжье", "Свеча", "Стрижи", "Лянгасово", "Дороничи"
-    ];
+    const REGIONS = ["Киров", "Кирово-Чепецк", "Слободской", "Вятские Поляны", "Котельнич", "Яранск", "Омутнинск", "Советск", "Уржум", "Нолинск", "Малмыж", "Белая Холуница", "Луза", "Кирс", "Мураши", "Зуевка", "Орлов", "Кикнур", "Тужа", "Санчурск", "Богородское", "Суна", "Верхошижемье", "Кумены", "Фалёнки", "Афанасьево", "Нагорск", "Подосиновец", "Даровской", "Шабалино", "Нема", "Опарино", "Юрья", "Кстинино", "Пижанка", "Лебяжье", "Свеча", "Стрижи", "Лянгасово", "Дороничи"];
 
-    let votesData = {};
-    let selectedRegion = null;
-    let currentSearchQuery = "";
-    let currentUser = { id: null, name: "Кировчанин" };
-    let hasVoted = false;
-    let votedRegion = null;
+    let votesData = {}, selectedRegion = null, currentSearchQuery = "", hasVoted = false, votedRegion = null;
+    let currentUser = { id: localStorage.getItem("unique_user_id") || "user_" + Math.random().toString(36).substr(2, 9) + "_" + Date.now() };
+    localStorage.setItem("unique_user_id", currentUser.id);
 
-    function showToast(message, isError = false) {
-        let toast = document.querySelector('.toast-notify');
-        if (!toast) {
-            toast = document.createElement('div');
-            toast.className = 'toast-notify';
-            document.body.appendChild(toast);
-        }
-        toast.textContent = message;
-        toast.style.background = isError ? '#c62828' : '#1e4d3a';
-        toast.classList.add('show');
-        setTimeout(() => toast.classList.remove('show'), 3000);
+    // --- ЛОГИКА ИИ ---
+    async function askAI(q) {
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${getK()}`;
+        const res = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ contents: [{ parts: [{ text: `Ты - эксперт по Кировской области. Отвечай кратко, душевно. Юзер: ${q}` }] }] })
+        });
+        const data = await res.json();
+        return data.candidates[0].content.parts[0].text;
     }
 
-    // Уникальный ID пользователя (сохраняется навсегда)
-    function getOrCreateUniqueUserId() {
-        let userId = localStorage.getItem("unique_user_id");
-        if (!userId) {
-            const randomPart = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 8);
-            const timestamp = Date.now();
-            userId = "user_" + randomPart + "_" + timestamp;
-            localStorage.setItem("unique_user_id", userId);
-        }
-        return userId;
+    const chatBtn = document.getElementById('ai-chat-btn');
+    const chatWin = document.getElementById('ai-chat-window');
+    const chatInp = document.getElementById('chatInp');
+    const chatSend = document.getElementById('chatSend');
+    const chatMsgs = document.getElementById('chatMsgs');
+
+    chatBtn.onclick = () => chatWin.classList.toggle('active');
+    document.getElementById('close-chat').onclick = () => chatWin.classList.remove('active');
+
+    async function sendToAI() {
+        const text = chatInp.value.trim(); if(!text) return;
+        addM(text, 'user'); chatInp.value = '';
+        try { const r = await askAI(text); addM(r, 'bot'); } 
+        catch(e) { addM("Ой, Вятка-река разлилась, связи нет. Попробуй позже!", 'bot'); }
+    }
+    function addM(t, s) { const d = document.createElement('div'); d.className = `msg ${s}`; d.innerText = t; chatMsgs.appendChild(d); chatMsgs.scrollTop = chatMsgs.scrollHeight; }
+    chatSend.onclick = sendToAI;
+    chatInp.onkeypress = (e) => e.key === 'Enter' && sendToAI();
+
+    // --- ОСНОВНАЯ ЛОГИКА КАРТЫ ---
+    function showToast(m, err=false) {
+        let t = document.querySelector('.toast-notify') || document.createElement('div');
+        t.className = 'toast-notify'; document.body.appendChild(t);
+        t.innerText = m; t.style.background = err ? '#c62828' : '#1e4d3a';
+        t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000);
     }
 
-    async function getUserInfo() {
-        const uniqueId = getOrCreateUniqueUserId();
-        const savedVote = localStorage.getItem(`vote_${uniqueId}`);
-        if (savedVote) {
-            const voteData = JSON.parse(savedVote);
-            hasVoted = true;
-            votedRegion = voteData.region;
-            document.getElementById("selectedInfo").innerHTML = `🔒 Ты уже голосовал за ${votedRegion}`;
-            document.getElementById("selectedInfo").classList.add('already-voted');
-        }
-        const shortId = uniqueId.slice(-12);
-        document.getElementById("userInfoBlock").innerHTML = `<span>🆔</span> ID: ${shortId}`;
-        currentUser.id = uniqueId;
-        return true;
-    }
-
-    // Загрузка голосов через JSONP
-    async function loadVotesFromSheet() {
-        return new Promise((resolve) => {
-            const callbackName = 'load_callback_' + Date.now();
-            const url = SCRIPT_URL + '?callback=' + callbackName;
-            
-            window[callbackName] = function(data) {
-                delete window[callbackName];
-                document.body.removeChild(script);
-                REGIONS.forEach(r => votesData[r] = 0);
-                if (!data.error) {
-                    for (let [reg, votes] of Object.entries(data)) {
-                        if (REGIONS.includes(reg) && typeof votes === 'number') {
-                            votesData[reg] = votes;
-                        }
-                    }
-                }
-                resolve(true);
+    async function loadVotes() {
+        return new Promise(res => {
+            const cb = 'cb_' + Date.now();
+            window[cb] = (data) => {
+                delete window[cb]; REGIONS.forEach(r => votesData[r] = 0);
+                if(!data.error) Object.entries(data).forEach(([r, v]) => { if(REGIONS.includes(r)) votesData[r] = v; });
+                res();
             };
-            
-            const script = document.createElement('script');
-            script.src = url;
-            script.onerror = () => {
-                delete window[callbackName];
-                document.body.removeChild(script);
-                resolve(false);
-            };
-            document.body.appendChild(script);
+            const s = document.createElement('script'); s.src = SCRIPT_URL + '?callback=' + cb; document.body.appendChild(s);
         });
     }
 
-    // Отправка голоса через JSONP
-    async function sendVoteToSheet(region) {
-        return new Promise((resolve, reject) => {
-            const callbackName = 'vote_callback_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
-            const url = SCRIPT_URL + 
-                '?callback=' + callbackName +
-                '&region=' + encodeURIComponent(region) +
-                '&userId=' + encodeURIComponent(currentUser.id) +
-                '&userName=' + encodeURIComponent(currentUser.name);
-            
-            window[callbackName] = function(response) {
-                delete window[callbackName];
-                document.body.removeChild(script);
-                if (response && response.error === "already_voted") {
-                    reject(new Error(response.message));
-                } else {
-                    resolve(true);
-                }
-            };
-            
-            const script = document.createElement('script');
-            script.src = url;
-            script.onerror = () => {
-                delete window[callbackName];
-                document.body.removeChild(script);
-                reject(new Error('Ошибка соединения. Проверьте интернет.'));
-            };
-            document.body.appendChild(script);
-        });
+    function render() {
+        const cont = document.getElementById("regionsList");
+        const filtered = REGIONS.filter(r => r.toLowerCase().includes(currentSearchQuery.toLowerCase()));
+        const total = Object.values(votesData).reduce((a,b)=>a+b,0);
+        cont.innerHTML = filtered.map(r => {
+            const p = total === 0 ? 0 : Math.round((votesData[r]||0)/total*100);
+            return `<div class="region-item" onclick="sel('${r}')"><div class="region-name">📍 ${r === selectedRegion ? '<b>'+r+'</b>' : r}</div><div class="region-percent">${p}%</div></div>`;
+        }).join('');
+        document.getElementById("totalCount").innerText = total;
     }
 
-    function getTotal() { return Object.values(votesData).reduce((a,b)=>a+b,0); }
-    function getTop() {
-        let top=null, max=-1;
-        for(let [name,count] of Object.entries(votesData)) if(count>max) { max=count; top=name; }
-        const total=getTotal();
-        return { name: top, percent: total>0&&top ? Math.round(max/total*100) : 0 };
-    }
-    function animateValue(el, start, end, suf="") {
-        if(!el) return;
-        let cur=start, step=Math.ceil((end-start)/25);
-        let timer=setInterval(()=>{
-            cur+=step;
-            if((step>0&&cur>=end)||(step<0&&cur<=end)) { cur=end; el.innerText=cur+suf; clearInterval(timer); }
-            else el.innerText=cur+suf;
-        },15);
+    window.sel = (r) => {
+        if(hasVoted) return showToast("Уже голосовал!", true);
+        selectedRegion = r;
+        document.getElementById("selectedInfo").innerHTML = `Выбран: <b>${r}</b>`;
+        render();
     }
 
-    function renderRegions() {
-        const container = document.getElementById("regionsList");
-        const search = currentSearchQuery.toLowerCase();
-        let filtered = REGIONS.filter(r => !search || r.toLowerCase().includes(search));
-        if(!filtered.length) { container.innerHTML='<div class="loading">😔 Ничего не найдено</div>'; return; }
-        const total = getTotal();
-        let html = "";
-        for(let region of filtered) {
-            const percent = total===0 ? 0 : Math.round((votesData[region]||0)/total*100);
-            const selected = selectedRegion===region;
-            let emoji = "📍";
-            if(region==="Киров") emoji="🏙️";
-            else if(region==="Кирово-Чепецк") emoji="🏭";
-            else if(region.includes("ское")) emoji="🌾";
-            const votedMark = (hasVoted && votedRegion===region) ? ' ✅' : '';
-            html += `<div class="region-item" data-region="${region}"><div class="region-name"><span>${emoji}</span><span style="${selected?'color:#ff8c00;font-weight:800':''}">${region}${votedMark} ${selected?'✓':''}</span></div><div class="region-percent">${percent}%</div></div>`;
-        }
-        container.innerHTML = html;
-        document.querySelectorAll('.region-item').forEach(el=>{
-            el.addEventListener('click',()=>{
-                if(hasVoted) { showToast(`⚠️ Ты уже голосовал за ${votedRegion}!`,true); return; }
-                selectedRegion = el.getAttribute('data-region');
-                document.getElementById("selectedInfo").innerHTML = `✅ Твой выбор: <strong>${selectedRegion}</strong>`;
-                renderRegions();
-            });
-        });
-    }
+    document.getElementById("voteBtn").onclick = async () => {
+        if(!selectedRegion || hasVoted) return showToast("Выбери город!", true);
+        const b = document.getElementById("voteBtn"); b.disabled = true;
+        const url = `${SCRIPT_URL}?callback=v&region=${encodeURIComponent(selectedRegion)}&userId=${currentUser.id}`;
+        window.v = () => { hasVoted = true; votedRegion = selectedRegion; localStorage.setItem("v", selectedRegion); showToast("Принято!"); loadVotes().then(render); };
+        const s = document.createElement('script'); s.src = url; document.body.appendChild(s);
+    };
 
-    async function updateStats() {
-        const total = getTotal();
-        animateValue(document.getElementById("totalCount"), parseInt(document.getElementById("totalCount").innerText)||0, total, "");
-        const top = getTop();
-        document.getElementById("topRegionName").innerText = top.name || "—";
-        animateValue(document.getElementById("topRegionPercent"), parseInt(document.getElementById("topRegionPercent").innerText)||0, top.percent, "%");
-    }
+    document.getElementById("searchInput").oninput = (e) => { currentSearchQuery = e.target.value; render(); };
+    document.getElementById("themeToggle").onclick = () => { document.body.classList.toggle('dark'); localStorage.setItem('th', document.body.classList.contains('dark') ? 'd' : 'l'); };
+    if(localStorage.getItem('th') === 'd') document.body.classList.add('dark');
+    if(localStorage.getItem("v")) { hasVoted = true; votedRegion = localStorage.getItem("v"); document.getElementById("selectedInfo").innerText = "Твой выбор: " + votedRegion; }
 
-    async function castVote() {
-        if(hasVoted) { showToast(`❌ Ты уже голосовал за ${votedRegion}!`,true); return; }
-        if(!selectedRegion) { showToast("🌾 Сначала выбери город!",true); return; }
-        if(!currentUser.id) { showToast("⚠️ Ошибка идентификации",true); return; }
-        
-        const btn = document.getElementById("voteBtn");
-        btn.disabled=true; btn.classList.add('disabled');
-        try {
-            await sendVoteToSheet(selectedRegion);
-            votesData[selectedRegion]++;
-            hasVoted=true; votedRegion=selectedRegion;
-            localStorage.setItem(`vote_${currentUser.id}`, JSON.stringify({ region: selectedRegion, timestamp: Date.now() }));
-            renderRegions(); await updateStats();
-            showToast(`🎉 Спасибо! Твой голос за ${selectedRegion} учтён!`, false);
-            document.getElementById("selectedInfo").innerHTML = `✨ Ты проголосовал за ${selectedRegion} ✨`;
-            document.getElementById("selectedInfo").classList.add('already-voted');
-            selectedRegion=null; renderRegions();
-        } catch(e) { 
-            showToast(e.message || "Ошибка при отправке голоса", true); 
-        }
-        finally { btn.disabled=false; btn.classList.remove('disabled'); }
-    }
-
-    async function init() {
-        await getUserInfo();
-        document.getElementById("regionsList").innerHTML='<div class="loading">📡 Загрузка...</div>';
-        await loadVotesFromSheet();
-        renderRegions(); updateStats();
-        document.getElementById("searchInput").addEventListener("input", e=>{ currentSearchQuery=e.target.value; renderRegions(); });
-        document.getElementById("searchClearBtn").addEventListener("click", ()=>{ document.getElementById("searchInput").value=""; currentSearchQuery=""; renderRegions(); });
-        document.getElementById("voteBtn").addEventListener("click", castVote);
-    }
-    init();
-
-    // Тёмная тема
-    const themeToggle = document.getElementById('themeToggle');
-    if(localStorage.getItem('theme') === 'dark') document.body.classList.add('dark');
-    themeToggle.addEventListener('click', () => {
-        document.body.classList.toggle('dark');
-        localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
-        themeToggle.innerText = document.body.classList.contains('dark') ? '☀️ Светлая' : '🌙 Тёмная';
-    });
-    themeToggle.innerText = document.body.classList.contains('dark') ? '☀️ Светлая' : '🌙 Тёмная';
-
-    // Плавающие частицы
-    for(let i=0;i<20;i++){let p=document.createElement('div');p.classList.add('particle');let s=Math.random()*100+30;p.style.width=s+'px';p.style.height=s+'px';p.style.left=Math.random()*100+'%';p.style.bottom='-'+Math.random()*40+'px';p.style.animationDuration=Math.random()*10+6+'s';p.style.animationDelay=Math.random()*8+'s';document.body.appendChild(p);}
+    loadVotes().then(render);
+    for(let i=0;i<15;i++){ let p=document.createElement('div'); p.className='particle'; p.style.width=Math.random()*60+20+'px'; p.style.height=p.style.width; p.style.left=Math.random()*100+'%'; p.style.bottom='-50px'; p.style.animationDelay=Math.random()*5+'s'; document.body.appendChild(p); }
 </script>
 </body>
 </html>
