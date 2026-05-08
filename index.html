@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Кировская область — Народная карта</title>
+    <title>Кировская область — Земля Вятская (Победа)</title>
     <style>
         * {
             margin: 0;
@@ -13,52 +13,65 @@
         }
 
         :root {
-            --bg-gradient-start: #e0f2f1;
-            --bg-gradient-end: #b2dfdb;
-            --card-bg: rgba(255, 255, 255, 0.95);
-            --text-primary: #1a2a2a;
-            --text-secondary: #4a5a5a;
-            --header-bg: linear-gradient(135deg, #ff9100 0%, #ff5e00 100%);
-            --stat-bg: linear-gradient(120deg, #1a4a3a 0%, #0f3327 100%);
-            --stat-card-bg: rgba(0, 0, 0, 0.2);
-            --search-bg: #f3f4f6;
-            --region-border: #edf2f7;
-            --region-hover-bg: #fff5e6;
-            --percent-bg: linear-gradient(135deg, #2c5a4a, #1e3d32);
-            --vote-btn-bg: linear-gradient(135deg, #ff8c00, #ff5e00);
-            --selected-info-bg: #fef9e6;
-            --selected-info-color: #b45f06;
-            --toast-bg: #1e1e2f;
-            --particle-color: rgba(255, 140, 0, 0.15);
+            --bg-gradient-start: #4a0000;
+            --bg-gradient-end: #1a0000;
+            --card-bg: rgba(255, 252, 245, 0.98);
+            --text-primary: #2c0e0e;
+            --text-secondary: #5d4037;
+            --header-bg: linear-gradient(135deg, #b71c1c 0%, #880e4f 100%);
+            --stat-bg: linear-gradient(120deg, #3e2723 0%, #1b0000 100%);
+            --stat-card-bg: rgba(255, 215, 0, 0.08);
+            --search-bg: #fbe9e7;
+            --region-border: #d7ccc8;
+            --region-hover-bg: #fff8e1;
+            --percent-bg: linear-gradient(135deg, #b45f06, #8b3c00);
+            --vote-btn-bg: linear-gradient(135deg, #e65100, #bf360c);
+            --selected-info-bg: #fff3e0;
+            --selected-info-color: #bf360c;
+            --toast-bg: #3e2723;
+            --particle-color: rgba(255, 215, 0, 0.4);
         }
 
         body.dark {
-            --bg-gradient-start: #0a1f1c;
-            --bg-gradient-end: #051a15;
-            --card-bg: rgba(20, 30, 30, 0.97);
-            --text-primary: #e0e0e0;
-            --text-secondary: #a0b0b0;
-            --header-bg: linear-gradient(135deg, #b45f06 0%, #8b3c00 100%);
-            --stat-bg: linear-gradient(120deg, #0d2a22 0%, #071a14 100%);
-            --stat-card-bg: rgba(255, 255, 255, 0.08);
-            --search-bg: #2a3a3a;
-            --region-border: #2a3a3a;
-            --region-hover-bg: #2a3a2a;
-            --percent-bg: linear-gradient(135deg, #4a7a6a, #2a5a4a);
-            --vote-btn-bg: linear-gradient(135deg, #b45f06, #8b3c00);
-            --selected-info-bg: #2a3a2a;
-            --selected-info-color: #ffb347;
-            --toast-bg: #2a2a3f;
-            --particle-color: rgba(255, 140, 0, 0.08);
+            --bg-gradient-start: #1b201a;
+            --bg-gradient-end: #0a0c0a;
+            --card-bg: rgba(22, 26, 22, 0.98);
+            --text-primary: #dcedc8;
+            --text-secondary: #9bad8d;
+            --header-bg: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%);
+            --stat-bg: linear-gradient(120deg, #0d120d 0%, #000000 100%);
+            --stat-card-bg: rgba(255, 140, 0, 0.05);
+            --search-bg: #263238;
+            --region-border: #37474f;
+            --region-hover-bg: #1b201a;
+            --percent-bg: linear-gradient(135deg, #b45f06, #8b3c00);
+            --vote-btn-bg: linear-gradient(135deg, #b71c1c, #7f0000);
+            --selected-info-bg: #1b0000;
+            --selected-info-color: #ffccbc;
         }
 
         body {
             font-family: 'Segoe UI', -apple-system, 'Inter', system-ui, sans-serif;
             min-height: 100vh;
-            background: radial-gradient(ellipse at 20% 30%, var(--bg-gradient-start), var(--bg-gradient-end));
+            background: radial-gradient(circle at top, var(--bg-gradient-start), var(--bg-gradient-end));
             padding: 16px;
             position: relative;
             overflow-x: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Георгиевская лента */
+        .george-ribbon {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 14px;
+            background: repeating-linear-gradient(45deg, #000, #000 15px, #ff8c00 15px, #ff8c00 30px);
+            z-index: 20;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
         }
 
         .particle {
@@ -67,216 +80,227 @@
             background: radial-gradient(circle, var(--particle-color), transparent);
             pointer-events: none;
             z-index: 0;
-            animation: floatParticle 12s infinite alternate ease-in-out;
+            animation: firework 10s infinite ease-in-out;
         }
 
-        @keyframes floatParticle {
-            0% { transform: translateY(0px) translateX(0px) scale(1); opacity: 0.3; }
-            100% { transform: translateY(-60px) translateX(30px) scale(1.3); opacity: 0; }
+        @keyframes firework {
+            0% { transform: translateY(100vh) scale(0.5); opacity: 0; }
+            50% { opacity: 0.8; }
+            100% { transform: translateY(-100vh) scale(1.5); opacity: 0; }
         }
 
         .app {
-            max-width: 550px;
-            margin: 0 auto;
+            width: 100%;
+            max-width: 500px;
             background: var(--card-bg);
-            border-radius: 56px;
-            backdrop-filter: blur(2px);
+            border-radius: 40px;
             overflow: hidden;
-            box-shadow: 0 30px 60px -20px rgba(0,0,0,0.3);
+            box-shadow: 0 40px 100px -20px rgba(0,0,0,0.7);
             position: relative;
             z-index: 2;
-            animation: slideUp 0.6s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            animation: appAppear 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
             color: var(--text-primary);
+            margin-top: 20px;
         }
 
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(50px) scale(0.96); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
+        @keyframes appAppear {
+            from { opacity: 0; transform: scale(0.95) translateY(20px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
         }
 
         .header {
             background: var(--header-bg);
-            padding: 28px 24px;
+            padding: 40px 24px 25px;
             text-align: center;
             color: white;
             position: relative;
-            overflow: hidden;
+            border-bottom: 3px solid #ffcc33;
         }
 
         .header h1 {
-            font-size: 28px;
-            font-weight: 800;
+            font-size: 26px;
+            font-weight: 900;
+            letter-spacing: 1px;
+            text-transform: uppercase;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 12px;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            gap: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.4);
         }
 
         .header p {
-            font-size: 14px;
-            opacity: 0.92;
-            margin-top: 10px;
+            font-size: 13px;
+            opacity: 0.9;
+            margin-top: 8px;
+            font-weight: 500;
         }
 
         .theme-toggle {
             position: absolute;
             top: 20px;
             right: 20px;
-            background: rgba(255,255,255,0.2);
-            border: none;
-            border-radius: 40px;
-            padding: 8px 16px;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 12px;
+            padding: 6px 12px;
             color: white;
-            font-weight: 600;
+            font-size: 11px;
+            font-weight: bold;
             cursor: pointer;
-            backdrop-filter: blur(4px);
-            z-index: 10;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 14px;
+            backdrop-filter: blur(5px);
         }
 
         .user-info {
-            background: rgba(0,0,0,0.3);
-            backdrop-filter: blur(8px);
-            border-radius: 60px;
-            padding: 8px 16px;
-            margin-top: 12px;
+            background: rgba(0,0,0,0.25);
+            border-radius: 50px;
+            padding: 6px 14px;
+            margin-top: 15px;
             display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 13px;
-            font-weight: 500;
+            font-size: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
         }
 
+        /* Блок предсказаний */
+        .prediction-section {
+            padding: 15px 20px;
+            background: var(--stat-card-bg);
+            border-bottom: 1px solid rgba(255,215,0,0.2);
+            text-align: center;
+        }
+
+        .predict-btn {
+            background: linear-gradient(135deg, #ffcc33, #b45f06);
+            color: #1a0000;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(180, 95, 6, 0.4);
+            transition: transform 0.2s;
+        }
+        
+        .predict-btn:active { transform: scale(0.95); }
+
+        .predict-result {
+            margin-top: 15px;
+            font-size: 15px;
+            font-weight: 600;
+            font-style: italic;
+            color: var(--selected-info-color);
+            min-height: 40px;
+            display: none;
+            padding: 10px;
+            border-left: 3px solid #ffcc33;
+            background: var(--selected-info-bg);
+            border-radius: 0 10px 10px 0;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
         .stats {
-            padding: 24px 20px;
+            padding: 20px;
             background: var(--stat-bg);
+            border-bottom: 1px solid rgba(255,215,0,0.2);
         }
 
         .stats-grid {
             display: flex;
-            gap: 14px;
-            flex-wrap: wrap;
+            gap: 10px;
         }
 
         .stat-card {
             flex: 1;
             background: var(--stat-card-bg);
-            backdrop-filter: blur(12px);
-            border-radius: 28px;
-            padding: 18px 12px;
+            border-radius: 20px;
+            padding: 15px 5px;
             text-align: center;
-            border: 1px solid rgba(255,200,100,0.3);
-            transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            border: 1px solid rgba(255,215,0,0.25);
         }
 
         .stat-number {
-            font-size: 34px;
+            font-size: 28px;
             font-weight: 900;
-            background: linear-gradient(135deg, #ffd89b, #ffb347);
+            background: linear-gradient(135deg, #fff, #ffd700);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
         }
 
         .stat-label {
-            font-size: 11px;
-            opacity: 0.8;
-            margin-top: 8px;
-            color: #e0e0e0;
-            font-weight: 500;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 5px;
+            color: #d7ccc8;
         }
 
-        .search-section {
-            padding: 20px 20px 10px 20px;
-        }
+        .search-section { padding: 20px 20px 10px; }
 
         .search-box {
             display: flex;
-            gap: 10px;
             background: var(--search-bg);
-            border-radius: 60px;
-            padding: 6px 8px 6px 22px;
+            border-radius: 15px;
+            padding: 0 15px;
             align-items: center;
-            transition: all 0.3s;
-            border: 1px solid transparent;
-        }
-
-        .search-box:focus-within {
-            border-color: #ff8c00;
-            box-shadow: 0 0 0 4px rgba(255,140,0,0.15);
+            border: 1px solid var(--region-border);
         }
 
         .search-box input {
             flex: 1;
             border: none;
             background: transparent;
-            padding: 14px 0;
+            padding: 15px 10px;
             font-size: 16px;
-            outline: none;
-            font-weight: 500;
             color: var(--text-primary);
-        }
-
-        .search-box button {
-            background: var(--vote-btn-bg);
-            border: none;
-            color: white;
-            padding: 10px 24px;
-            border-radius: 50px;
-            font-weight: 700;
-            cursor: pointer;
+            outline: none;
         }
 
         .regions-container {
-            max-height: 420px;
+            max-height: 300px;
             overflow-y: auto;
-            padding: 0 20px 20px 20px;
+            padding: 10px 20px;
         }
 
         .region-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 16px 0;
+            padding: 15px 5px;
             border-bottom: 1px solid var(--region-border);
             cursor: pointer;
-            transition: all 0.25s ease;
         }
 
         .region-item:hover {
             background: var(--region-hover-bg);
-            padding-left: 14px;
-            padding-right: 14px;
-            margin: 0 -14px;
-            border-radius: 28px;
+            border-radius: 10px;
         }
 
         .region-name {
             font-weight: 600;
-            font-size: 16px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
 
         .region-percent {
             background: var(--percent-bg);
             color: white;
-            padding: 6px 18px;
-            border-radius: 40px;
-            font-size: 14px;
+            padding: 5px 12px;
+            border-radius: 8px;
+            font-size: 13px;
             font-weight: 800;
-            min-width: 70px;
+            min-width: 55px;
             text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
 
         .vote-section {
-            padding: 20px 20px 28px;
-            border-top: 1px solid var(--region-border);
+            padding: 20px 20px 30px;
             text-align: center;
         }
 
@@ -284,28 +308,25 @@
             background: var(--vote-btn-bg);
             color: white;
             border: none;
-            padding: 18px 28px;
-            border-radius: 80px;
+            padding: 20px;
+            border-radius: 20px;
             font-size: 18px;
-            font-weight: 800;
+            font-weight: 900;
             width: 100%;
             cursor: pointer;
-            transition: all 0.25s;
-            box-shadow: 0 10px 25px -5px rgba(255,140,0,0.4);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 10px 25px rgba(191, 54, 12, 0.4);
         }
 
         .selected-info {
-            margin-top: 16px;
+            margin-top: 15px;
             font-size: 13px;
-            font-weight: 600;
+            padding: 10px;
+            border-radius: 10px;
             background: var(--selected-info-bg);
-            padding: 12px;
-            border-radius: 60px;
             color: var(--selected-info-color);
+            border: 1px dashed var(--selected-info-color);
         }
 
         .toast-notify {
@@ -315,13 +336,11 @@
             transform: translateX(-50%) translateY(100px);
             background: var(--toast-bg);
             color: white;
-            padding: 12px 24px;
-            border-radius: 60px;
-            font-weight: 600;
+            padding: 15px 30px;
+            border-radius: 50px;
             z-index: 1000;
-            transition: transform 0.3s ease;
-            backdrop-filter: blur(12px);
-            font-size: 14px;
+            transition: 0.3s;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
         .toast-notify.show { transform: translateX(-50%) translateY(0); }
     </style>
@@ -329,34 +348,44 @@
 <body>
 
 <div class="app">
+    <div class="george-ribbon"></div>
     <div class="header">
-        <button class="theme-toggle" id="themeToggle">🌙 Тёмная</button>
-        <h1><span>🏔️</span> Земля Вятская <span>🌾</span></h1>
-        <p>Выбери свой город — покажи мощь малой родины!</p>
-        <div class="user-info" id="userInfoBlock"><span>🔄</span> Загрузка...</div>
+        <button class="theme-toggle" id="themeToggle">🌙 Темная</button>
+        <h1><span>⭐</span> Земля Вятская <span>⭐</span></h1>
+        <p>Победа в единстве. Голосуй за свой город!</p>
+        <div class="user-info" id="userInfoBlock">ID: Загрузка...</div>
+    </div>
+
+    <div class="prediction-section">
+        <button class="predict-btn" id="predictBtn">✉️ Получить послание Победы</button>
+        <div class="predict-result" id="predictResult"></div>
     </div>
 
     <div class="stats">
         <div class="stats-grid">
-            <div class="stat-card"><div class="stat-number" id="totalCount">0</div><div class="stat-label">Вятчан в игре</div></div>
+            <div class="stat-card"><div class="stat-number" id="totalCount">0</div><div class="stat-label">Вятчан</div></div>
             <div class="stat-card"><div class="stat-number" id="topRegionName">—</div><div class="stat-label">Лидер</div></div>
-            <div class="stat-card"><div class="stat-number" id="topRegionPercent">0%</div><div class="stat-label">Доля лидера</div></div>
+            <div class="stat-card"><div class="stat-number" id="topRegionPercent">0%</div><div class="stat-label">Доля</div></div>
         </div>
     </div>
 
     <div class="search-section">
-        <div class="search-box"><span>🔍</span><input type="text" id="searchInput" placeholder="Найти свой город..."><button id="searchClearBtn">✕</button></div>
+        <div class="search-box">
+            <span>🔍</span>
+            <input type="text" id="searchInput" placeholder="Найти город области...">
+        </div>
     </div>
 
-    <div class="regions-container" id="regionsList"><div class="loading">📡 Загрузка...</div></div>
+    <div class="regions-container" id="regionsList"></div>
 
     <div class="vote-section">
-        <button class="vote-btn" id="voteBtn"><span>🏆</span> Проголосовать <span>✅</span></button>
-        <div class="selected-info" id="selectedInfo">Нажми на любой город в списке</div>
+        <button class="vote-btn" id="voteBtn">Голосовать за город</button>
+        <div class="selected-info" id="selectedInfo">Выберите город из списка выше</div>
     </div>
 </div>
 
 <script>
+    // --- ОСНОВНОЙ КОД ДВИЖКА (БЕЗ ИЗМЕНЕНИЙ) ---
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyu3gHjAR0YXFo0snsn2641gAbkpi_xbeqn2psOHLvek_JefdV6RRk0Agu2_KezpnWJWQ/exec";
     const REGIONS = ["Киров", "Кирово-Чепецк", "Слободской", "Вятские Поляны", "Котельнич", "Яранск", "Омутнинск", "Советск", "Уржум", "Нолинск", "Малмыж", "Белая Холуница", "Луза", "Кирс", "Мураши", "Зуевка", "Орлов", "Кикнур", "Тужа", "Санчурск", "Богородское", "Суна", "Верхошижемье", "Кумены", "Фалёнки", "Афанасьево", "Нагорск", "Подосиновец", "Даровской", "Шабалино", "Нема", "Опарино", "Юрья", "Кстинино", "Пижанка", "Лебяжье", "Свеча", "Стрижи", "Лянгасово", "Дороничи"];
 
@@ -367,7 +396,7 @@
     function showToast(m, err=false) {
         let t = document.querySelector('.toast-notify') || document.createElement('div');
         t.className = 'toast-notify'; document.body.appendChild(t);
-        t.innerText = m; t.style.background = err ? '#c62828' : '#1e4d3a';
+        t.innerText = m; t.style.background = err ? '#b71c1c' : '#2e7d32';
         t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000);
     }
 
@@ -387,44 +416,121 @@
         const cont = document.getElementById("regionsList");
         const filtered = REGIONS.filter(r => r.toLowerCase().includes(currentSearchQuery.toLowerCase()));
         const total = Object.values(votesData).reduce((a,b)=>a+b,0);
+        
         cont.innerHTML = filtered.map(r => {
             const p = total === 0 ? 0 : Math.round((votesData[r]||0)/total*100);
-            const selected = selectedRegion === r;
-            return `<div class="region-item" onclick="sel('${r}')"><div class="region-name">📍 <span style="${selected?'color:#ff8c00;font-weight:800':''}">${r}</span></div><div class="region-percent">${p}%</div></div>`;
+            const isSelected = selectedRegion === r;
+            return `<div class="region-item" onclick="sel('${r}')">
+                <div class="region-name">📍 <span style="${isSelected?'color:#bf360c;font-weight:800':''}">${r}</span></div>
+                <div class="region-percent">${p}%</div>
+            </div>`;
         }).join('');
+
         document.getElementById("totalCount").innerText = total;
-        document.getElementById("userInfoBlock").innerText = "🆔 ID: " + currentUser.id.slice(-12);
+        document.getElementById("userInfoBlock").innerText = "🆔 ID: " + currentUser.id.slice(-8);
+        
         const top = Object.entries(votesData).reduce((a, b) => b[1] > a[1] ? b : a, ["—", 0]);
         document.getElementById("topRegionName").innerText = top[0];
         document.getElementById("topRegionPercent").innerText = total > 0 ? Math.round(top[1]/total*100) + "%" : "0%";
     }
 
     window.sel = (r) => {
-        if(hasVoted) return showToast("Уже голосовал за " + votedRegion + "!", true);
+        if(hasVoted) return showToast("Вы уже поддержали " + votedRegion + "!", true);
         selectedRegion = r;
-        document.getElementById("selectedInfo").innerHTML = `Выбран: <b>${r}</b>`;
+        document.getElementById("selectedInfo").innerHTML = `Ваш выбор: <b>${r}</b>`;
         render();
     }
 
     document.getElementById("voteBtn").onclick = async () => {
-        if(!selectedRegion || hasVoted) return showToast("Выбери город!", true);
+        if(!selectedRegion || hasVoted) return showToast("Выберите свой город!", true);
         const url = `${SCRIPT_URL}?callback=v&region=${encodeURIComponent(selectedRegion)}&userId=${currentUser.id}`;
-        window.v = () => { hasVoted = true; votedRegion = selectedRegion; localStorage.setItem("v", selectedRegion); showToast("Принято!"); loadVotes().then(render); };
+        window.v = () => { 
+            hasVoted = true; 
+            votedRegion = selectedRegion; 
+            localStorage.setItem("v", selectedRegion); 
+            showToast("Голос принят! Спасибо."); 
+            loadVotes().then(render); 
+        };
         const s = document.createElement('script'); s.src = url; document.body.appendChild(s);
     };
 
     document.getElementById("searchInput").oninput = (e) => { currentSearchQuery = e.target.value; render(); };
+    
     document.getElementById("themeToggle").onclick = () => {
         document.body.classList.toggle('dark');
-        document.getElementById("themeToggle").innerText = document.body.classList.contains('dark') ? '☀️ Светлая' : '🌙 Тёмная';
+        document.getElementById("themeToggle").innerText = document.body.classList.contains('dark') ? '☀️ Светлая' : '🌙 Темная';
     };
+
     if(localStorage.getItem("v")) { 
         hasVoted = true; votedRegion = localStorage.getItem("v"); 
-        document.getElementById("selectedInfo").innerText = "Твой выбор: " + votedRegion; 
+        document.getElementById("selectedInfo").innerText = "Ваш вклад: " + votedRegion; 
     }
 
     loadVotes().then(render);
-    for(let i=0;i<15;i++){ let p=document.createElement('div'); p.className='particle'; p.style.width=Math.random()*60+20+'px'; p.style.height=p.style.width; p.style.left=Math.random()*100+'%'; p.style.bottom='-50px'; p.style.animationDelay=Math.random()*5+'s'; document.body.appendChild(p); }
+
+    // --- НОВАЯ ФИЧА: 100 ПРЕДСКАЗАНИЙ ---
+    const PREDICTIONS = [
+        "Мирное небо над головой станет вашим главным спутником.", "Ваша стойкость сегодня принесет победу завтра.", "Впереди вас ждут светлые и радостные дни.", "Мужество предков живет в вашем сердце — действуйте смело!", "Скоро вы услышите отличные и долгожданные новости.",
+        "Ваш труд принесет богатые плоды.", "Сегодняшний день подарит гордость за близких.", "Ваша сила духа поможет преодолеть любые преграды.", "Добро, которое вы делаете, вернется к вам вдвойне.", "Вас ждет неожиданный успех в важном деле.",
+        "Светлая память придаст вам сил для новых свершений.", "В вашем доме всегда будет царить тепло и уют.", "Ваши таланты скоро признают все окружающие.", "Верность своим идеалам приведет вас к победе.", "Скоро в вашей жизни начнется белая полоса.",
+        "Дружба и поддержка близких станут вашей крепостью.", "Впереди ясный путь и новые горизонты.", "Ваши слова сегодня вдохновят кого-то на подвиг.", "Честность и труд — ваши главные союзники сейчас.", "Судьба готовит вам приятный и заслуженный сюрприз.",
+        "Вы найдете правильное решение в сложной ситуации.", "Ваше терпение будет щедро вознаграждено.", "Мир и гармония наполнят ваше сердце.", "Уважение окружающих к вам возрастет многократно.", "Старые трудности останутся в прошлом навсегда.",
+        "Ваша целеустремленность пробьет любые стены.", "Встречайте каждый день с улыбкой — и он ответит тем же.", "Здоровье будет крепким, как броня танка.", "Вам предстоит стать лидером в важном проекте.", "Ваши идеи найдут отклик и поддержку.",
+        "Сплоченность с коллегами принесет блестящий результат.", "Вы обретете внутреннее спокойствие и уверенность.", "Скоро вам представится шанс проявить свой героизм.", "Ваша мудрость поможет разрешить давний спор.", "Любовь и согласие будут царить в вашей семье.",
+        "Ваши усилия не напрасны — триумф уже близок.", "Откроются новые двери, о которых вы даже не мечтали.", "Ваш оптимизм заразит всех вокруг.", "Вы станете примером для подрастающего поколения.", "Удача будет сопровождать вас во всех начинаниях.",
+        "Ваша искренность обезоружит любых недоброжелателей.", "Скоро вы получите важное и радостное письмо.", "Ваш жизненный опыт сослужит хорошую службу.", "Вы сделаете правильный выбор, доверяя интуиции.", "Радость придет оттуда, откуда вы её не ждали.",
+        "Ваш дом будет полной чашей.", "Вы преодолеете все испытания с высоко поднятой головой.", "Ваше благородство не останется незамеченным.", "Скоро вы отпразднуете важную личную победу.", "Вдохновение посетит вас в самый нужный момент.",
+        "Вы найдете надежного союзника в новом деле.", "Ваш энтузиазм сдвинет горы.", "Справедливость восторжествует в вашу пользу.", "Ваш путь освещен звездой удачи.", "Сегодня отличный день для примирения.",
+        "Ваша энергия бьет ключом — направьте её на созидание.", "Высшие силы оберегают вас и вашу семью.", "Ваша доброта — ваше главное оружие.", "Скоро вы достигнете цели, к которой долго шли.", "Вам откроется важная истина.",
+        "Ваша смекалка выручит в нестандартной ситуации.", "Ваш авторитет непоколебим.", "Вы станете источником радости для близкого человека.", "Трудности закалят вас и сделают только сильнее.", "Вам предстоит интересное и полезное путешествие.",
+        "Ваш талант раскроется с новой неожиданной стороны.", "Финансовое благополучие уже на пороге.", "Вы заслужили отдых и скоро сможете им насладиться.", "Ваше слово будет иметь решающий вес.", "Вас ждет приятная встреча со старым другом.",
+        "Ваша преданность делу вызывает восхищение.", "Вы с честью выйдете из любой сложной ситуации.", "Ваши планы реализуются даже лучше, чем вы думали.", "Вы обретете веру в себя и свои силы.", "Ваша интуиция подскажет верный путь к успеху.",
+        "Вам предстоит совершить благородный поступок.", "Ваша жизнь наполнится новым глубоким смыслом.", "Вы станете опорой для тех, кто в вас нуждается.", "Ваша решительность принесет быстрые результаты.", "Скоро тучи рассеются, и выглянет солнце.",
+        "Ваш внутренний свет укажет дорогу другим.", "Вы найдете ответы на давно мучившие вопросы.", "Ваша щедрость вернется к вам сторицей.", "Вы одержите верх в давнем соперничестве.", "Ваша выдержка — залог вашего успеха.",
+        "Вы откроете в себе новые удивительные способности.", "Ваша жизнь станет ярче и насыщеннее.", "Вы оставите добрый след в памяти людей.", "Ваша скромность украшает вас и притягивает удачу.", "Вы заложите прочный фундамент для будущего.",
+        "Ваша стойкость вдохновляет окружающих.", "Вы получите заслуженную награду за свой труд.", "Ваша жизнь будет наполнена гармонией и миром.", "Вы с легкостью преодолеете все барьеры.", "Ваш дух непобедим, а воля тверда.",
+        "Вы напишете свою собственную историю успеха.", "Ваша мудрость защитит вас от ошибок.", "Вы станете победителем в главной битве вашей жизни.", "Светлая память предков хранит вас на вашем пути.", "Пусть каждый ваш день будет днем мирных побед!"
+    ];
+
+    const predictBtn = document.getElementById('predictBtn');
+    const predictResult = document.getElementById('predictResult');
+
+    // Проверяем, есть ли уже предсказание на сегодня
+    const today = new Date().toLocaleDateString();
+    const savedPredictDate = localStorage.getItem('predict_date');
+    const savedPredictText = localStorage.getItem('predict_text');
+
+    if (savedPredictDate === today && savedPredictText) {
+        predictBtn.style.display = 'none';
+        predictResult.style.display = 'block';
+        predictResult.innerText = savedPredictText;
+    }
+
+    predictBtn.onclick = () => {
+        // Берем случайное предсказание (можно привязать жестко к ID, но рандом веселее)
+        const randomIndex = Math.floor(Math.random() * PREDICTIONS.length);
+        const text = "«" + PREDICTIONS[randomIndex] + "»";
+        
+        // Сохраняем в память
+        localStorage.setItem('predict_date', today);
+        localStorage.setItem('predict_text', text);
+        
+        // Анимация появления
+        predictBtn.style.display = 'none';
+        predictResult.style.display = 'block';
+        predictResult.innerText = text;
+    };
+
+    // Создаем искры
+    for(let i=0;i<12;i++){ 
+        let p=document.createElement('div'); 
+        p.className='particle'; 
+        p.style.width=Math.random()*40+10+'px'; 
+        p.style.height=p.style.width; 
+        p.style.left=Math.random()*100+'%'; 
+        p.style.animationDelay=Math.random()*8+'s'; 
+        document.body.appendChild(p); 
+    }
 </script>
 </body>
 </html>
